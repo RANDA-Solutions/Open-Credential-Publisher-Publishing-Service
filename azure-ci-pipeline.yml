@@ -1,0 +1,28 @@
+trigger:
+- main
+- mike
+- feature/*
+
+pr:
+- main
+- mike
+- feature/*
+
+pool:
+  vmImage: 'Ubuntu 18.04'
+
+variables:
+  imageName: 'opencredspubservicewebapi:$(Build.BuildId)'
+
+steps:
+- script: docker build -f OpenCredentialsPublisher.PublishingService.Api/Dockerfile -t $(dockerId).azurecr.io/$(imageName) .
+  workingDirectory: ./
+  displayName: 'Docker Build'
+
+- script: |
+    docker login -u $(dockerId) -p $pswd $(dockerId).azurecr.io
+    docker push $(dockerId).azurecr.io/$(imageName)
+  env:
+    pswd: $(dockerPassword)
+  workingDirectory: ./
+  displayName: 'Docker Push'
