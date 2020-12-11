@@ -2,10 +2,8 @@
 {
     public static class PublishServiceConstants
     {
-        public const string AccessKeyUrl = "https://opencredentialpublisher.org/access/{0}";
         public const string ClrFileBlobContainerName = "publishclr";
         public const string LeaseBlobContainerName = "blobleases";
-
     }
 
     public static class PublishQueues
@@ -22,6 +20,7 @@
         public const string Packaging = "Packaging";
         public const string SignClr = "Signing";
         public const string Complete = "Complete";
+        public const string Revoked = "Revoked";
     }
 
     public static class PublishProcessingStates
@@ -39,6 +38,9 @@
         public const string PublishNotifyProcessing = "PubNotify-Processing";
         public const string PublishNotifyFailure = "PubNotify-Failure";
         public const string Complete = "Complete";
+        public const string RevokedByClient = "PubRevoke-ByClient";
+        public const string RevokedByIssuer = "PubRevoke-ByIssuer";
+
     }
 
     public static class ClrFileTypes

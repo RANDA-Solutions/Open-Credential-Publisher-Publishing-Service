@@ -176,6 +176,11 @@ namespace OpenCredentialsPublisher.Credentials.Clrs.KeyStorage
 
             return new OcpSigningCredentials() { Algorithm = SecurityAlgorithms.RsaSha512, KeyId = keyId, IssuerId = issuerId, Parameters = key.Parameters };
         }
+
+        public Task DeleteKeyAsync(string keyName)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 

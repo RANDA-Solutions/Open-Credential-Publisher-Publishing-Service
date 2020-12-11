@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OpenCredentialsPublisher.PublishingService.Services;
+using System;
 using System.Threading.Tasks;
 
 namespace OpenCredentialsPublisher.PublishingService.Api.Controllers
@@ -38,8 +39,33 @@ namespace OpenCredentialsPublisher.PublishingService.Api.Controllers
             return Ok(response);
         }
 
-    }
-   
 
- 
+
+        /// <summary>
+        /// Revoke a Request
+        /// </summary>
+        [Authorize("ocp-publisher", AuthenticationSchemes = "Bearer")]
+        [ValidationFilter]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpDelete("{requestId}")]
+        public async Task<IActionResult> RevokeRequest([FromRoute] string requestId)
+        {
+
+            try
+            {
+                string clientId = User.ClientId();
+
+                await _publishService.RevokeAsync(requestId, clientId);
+
+                return Ok(new { Message = "Revocation Successful" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ClrPublishResult() { Error = true, ErrorMessage = new string[] { ex.Message } });
+            }
+
+        }
+
+    }
+
 }

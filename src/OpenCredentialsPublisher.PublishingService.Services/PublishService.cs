@@ -1,8 +1,11 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using OpenCredentialsPublisher.Credentials.Clrs.Clr;
+using OpenCredentialsPublisher.Credentials.Clrs.Interfaces;
 using OpenCredentialsPublisher.Credentials.Drawing;
+using OpenCredentialsPublisher.Credentials.VerifiableCredentials;
 using OpenCredentialsPublisher.PublishingService.Data;
 using OpenCredentialsPublisher.PublishingService.Shared;
 using System;
@@ -17,12 +20,18 @@ namespace OpenCredentialsPublisher.PublishingService.Services
         private readonly OcpDbContext _context;
         private readonly IFileStoreService _store;
         private readonly IMediator _mediator;
+        private readonly IKeyStore _keyStore;
+        private readonly string _appBaseUri;
+        private readonly string _accessKeyUrl;
 
-        public PublishService(OcpDbContext context, IFileStoreService store, IMediator mediator)
+        public PublishService(IConfiguration configuration, OcpDbContext context, IFileStoreService store, IMediator mediator, IKeyStore keyStore)
         {
+            _appBaseUri = configuration["AppBaseUri"];
+            _accessKeyUrl = configuration["accessKeyUrl"];
             _context = context;
             _store = store;
             _mediator = mediator;
+            _keyStore = keyStore;
         }
 
         public async Task<string> ProcessRequestAsync(string id, ClrDType clr, string clientId)
@@ -68,27 +77,34 @@ namespace OpenCredentialsPublisher.PublishingService.Services
 
             await _context.SaveChangesAsync();
 
-            var key = request.LatestAccessKey()?.Key;
+            string accessKey = request.LatestAccessKey()?.Key;
 
-            ClrPublishQrCode qrCode = null;
-
-            if (key != null && request.PublishState == PublishStates.Complete)
+            if (accessKey != null && request.PublishState == PublishStates.Complete)
             {
-                var url = PublishRequestExtensions.AccessKeyUrl(key);
+                var url = PublishRequestExtensions.AccessKeyUrl(_accessKeyUrl, accessKey, _appBaseUri);
 
-                qrCode = new ClrPublishQrCode 
+                var qrCode = new ClrPublishQrCode 
                 {
                     MimeType = "image/png",
                     Data = Convert.ToBase64String(QRCodeUtility.Create(url))
                 };
-            }
 
-            return new PublishStatusResult
+                return new PublishStatusResult
+                {
+                    Status = request.PublishState,
+                    AccessKey = accessKey,
+                    QrCode = qrCode
+                };
+
+            }
+            else
             {
-                Status = request.PublishState,
-                AccessKey = key,
-                QrCode = qrCode
-            };
+                return new PublishStatusResult
+                {
+                    Status = request.PublishState
+                };
+
+            }
         }
 
         private string ClrFilename(string requestId)
@@ -96,7 +112,65 @@ namespace OpenCredentialsPublisher.PublishingService.Services
             return string.Format("{0:yyyy}/{0:MM}/{0:dd}/{0:HH}/clr_{1}_{0:mmssffff}.json", DateTime.UtcNow, requestId);
         }
 
+        public async Task RevokeAsync(string requestId, string clientId)
+        {
+            var request = await _context.PublishRequests
+                .Include(r => r.AccessKeys)
+                .Include(r => r.SigningKeys)
+                .Where(r => r.RequestId == requestId).FirstOrDefaultAsync();
 
+            if (request == null)
+            {
+                throw new Exception("request does not exist");
+            }
+
+            if (request.ClientId != clientId)
+            {                 
+                throw new Exception("client_id requesting revocation is not the client who published");
+            }
+
+            if (request.PublishState == PublishStates.Revoked)
+            {
+                return;
+            }
+
+            request.PublishState = PublishStates.Revoked;
+            request.ProcessingState = PublishProcessingStates.RevokedByClient;
+
+            foreach (var accessKey in request.AccessKeys)
+            {
+                accessKey.Expired = true;
+            }
+
+            foreach (var signKey in request.SigningKeys)
+            {
+                signKey.Expired = true;
+
+                await _keyStore.DeleteKeyAsync(signKey.KeyName);
+            }
+            
+            await _context.SaveChangesAsync();
+
+        }
+
+        public async Task<VerifiableCredential> GetCredentialsAsync(string accessKey)
+        {
+            var request = await _context.PublishRequests
+               .Include(r => r.Files)
+               .Where(r => r.AccessKeys.Any(k => k.Key == accessKey && !k.Expired))
+               .FirstOrDefaultAsync();
+
+            var vcFileName = request?.GetVcWrappedClr()?.FileName;
+
+            if (vcFileName == null)
+                return null;
+
+            var contents = await _store.DownloadAsStringAsync(vcFileName);
+
+            var vc = JsonConvert.DeserializeObject<VerifiableCredential>(contents);
+
+            return vc;
+        }
     }
 
 

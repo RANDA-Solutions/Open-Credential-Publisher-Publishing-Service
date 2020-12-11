@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OpenCredentialsPublisher.PublishingService.Services;
+using System.Threading.Tasks;
 
 namespace OpenCredentialsPublisher.PublishingService.Api.Controllers
 {
@@ -8,9 +11,11 @@ namespace OpenCredentialsPublisher.PublishingService.Api.Controllers
     public class CredentialsController : ControllerBase
     {
 
-        public CredentialsController()
-        {
+        private readonly IPublishService _publishService;
 
+        public CredentialsController(IPublishService publishService)
+        {
+            _publishService = publishService;
         }
 
         /// <summary>
@@ -20,10 +25,13 @@ namespace OpenCredentialsPublisher.PublishingService.Api.Controllers
         /// <returns>Signed CLR or VC</returns>
         [Authorize("ocp-wallet", AuthenticationSchemes = "Bearer")]
         [HttpPost("")]
-        [ApiExplorerSettings(GroupName = "TODO")]
-        public IActionResult Credentials([FromBody] CredentialRequest model)
+        [RequestRateLimit(Name = nameof(GetCredentials), Milliseconds = 1000)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(VerifiableCredentialResult))]
+        public async Task<IActionResult> GetCredentials([FromBody] CredentialRequest model)
         {
-            return Ok(new CredentialResult());
+            var vc = await _publishService.GetCredentialsAsync(model.AccessKey);
+
+            return Ok(new VerifiableCredentialResult() { Credentials = vc });
         }
 
     }

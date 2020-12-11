@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Web;
 
 namespace OpenCredentialsPublisher.PublishingService.Data
 {
@@ -63,29 +64,32 @@ namespace OpenCredentialsPublisher.PublishingService.Data
     {
         public static File GetOriginalClr(this PublishRequest request)
         {
-            return request.Files.Where(f => f.FileType == ClrFileTypes.OriginalClr).OrderByDescending(f => f.CreateTimestamp).FirstOrDefault();
+            return request?.Files.Where(f => f.FileType == ClrFileTypes.OriginalClr).OrderByDescending(f => f.CreateTimestamp).FirstOrDefault();
         }
 
         public static File GetSignedClr(this PublishRequest request)
         {
-            return request.Files.Where(f => f.FileType == ClrFileTypes.SignedClr).OrderByDescending(f => f.CreateTimestamp).FirstOrDefault();
+            return request?.Files.Where(f => f.FileType == ClrFileTypes.SignedClr).OrderByDescending(f => f.CreateTimestamp).FirstOrDefault();
         }
 
         public static File GetQrCodeImprintedClr(this PublishRequest request)
         {
-            return request.Files.Where(f => f.FileType == ClrFileTypes.QrCodeImprintedClr).OrderByDescending(f => f.CreateTimestamp).FirstOrDefault();
+            return request?.Files.Where(f => f.FileType == ClrFileTypes.QrCodeImprintedClr).OrderByDescending(f => f.CreateTimestamp).FirstOrDefault();
         }
 
+        public static File GetVcWrappedClr(this PublishRequest request)
+        {
+            return request?.Files.Where(f => f.FileType == ClrFileTypes.VCWrappedClr).OrderByDescending(f => f.CreateTimestamp).FirstOrDefault();
+        }
 
         public static AccessKey LatestAccessKey(this PublishRequest request)
         {
-            return request.AccessKeys.Where(k => !k.Expired).OrderByDescending(f => f.CreateTimestamp).FirstOrDefault();
+            return request?.AccessKeys.Where(k => !k.Expired).OrderByDescending(f => f.CreateTimestamp).FirstOrDefault();
         }
 
-        public static string AccessKeyUrl(string accessKey)
+        public static string AccessKeyUrl(string accessKeyUrl, string accessKey, string apiBaseUri)
         {
-            return string.Format(PublishServiceConstants.AccessKeyUrl, accessKey);
-
+            return string.Format(accessKeyUrl, HttpUtility.UrlEncode(accessKey), HttpUtility.UrlEncode(apiBaseUri));
         }
     }
 
