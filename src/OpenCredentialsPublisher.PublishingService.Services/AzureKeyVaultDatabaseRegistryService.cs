@@ -211,6 +211,23 @@ namespace OpenCredentialsPublisher.PublishingService.Services
                 "RS512" => new SHA512CryptoServiceProvider().ComputeHash(bytesData),
                 _ => throw new NotImplementedException($"{algorithm} has not been implemented yet.")
             };
-}
+
+        public async Task DeleteKeyAsync(string keyName)
+        {
+            try
+            {
+                var kvc = GetKeyVaultClient();
+                await kvc.DeleteKeyAsync(_options.KeyVaultBaseUri, keyName);
+
+                return;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+    }
 
 }

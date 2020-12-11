@@ -16,6 +16,7 @@ using OpenCredentialsPublisher.PublishingService.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace OpenCredentialsPublisher.PublishingService.Functions
@@ -155,12 +156,14 @@ namespace OpenCredentialsPublisher.PublishingService.Functions
             clrSet.Clrs ??= new List<ClrDType>();
             clrSet.Clrs.Add(clr);
 
+            var accessKey = publishRequest.LatestAccessKey()?.Key;
+
             var verifiableCredential = new VerifiableCredential
             {
                 Contexts = new List<string>(new[] { "https://www.w3.org/2018/credentials/v1", "https://contexts.ward.guru/clr_v1p0.jsonld" }),
                 Types = new List<string>(new[] { "VerifiableCredential" }),
-                Id = $"{baseUri}/credentials/{Guid.NewGuid()}",
-                Issuer = $"{baseUri}/issuers/{Guid.NewGuid()}",
+                Id = UriUtility.Combine(baseUri, "credentials", publishRequest.RequestId),
+                Issuer = UriUtility.Combine(baseUri, "issuers", publishRequest.ClientId),
                 IssuanceDate = DateTime.UtcNow,
                 CredentialSubjects = new List<ICredentialSubject>(new[] { clrSet })
             };

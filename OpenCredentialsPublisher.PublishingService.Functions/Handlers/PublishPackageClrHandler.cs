@@ -24,10 +24,15 @@ namespace OpenCredentialsPublisher.PublishingService.Functions
         private readonly string readyState = PublishProcessingStates.PublishPackageClrReady;
         private readonly string processingState = PublishProcessingStates.PublishPackageClrProcessing;
         private readonly string failureState = PublishProcessingStates.PublishPackageClrFailure;
+        private readonly string _appBaseUri;
+        private readonly string _accessKeyUrl;
 
-        public PublishPackageClrHandler(IOptions<AzureBlobOptions> blobOptions, OcpDbContext context, ILogger<PublishMessageHandlerBase> log, 
+        public PublishPackageClrHandler(IConfiguration configuration, IOptions<AzureBlobOptions> blobOptions, OcpDbContext context, ILogger<PublishMessageHandlerBase> log, 
                         IMediator mediator, IFileStoreService fileService) : base(blobOptions, context, log)
         {
+            _appBaseUri = configuration["AppBaseUri"];
+            _accessKeyUrl = configuration["accessKeyUrl"];
+
             _mediator = mediator;
             _fileService = fileService;
         }
@@ -111,7 +116,7 @@ namespace OpenCredentialsPublisher.PublishingService.Functions
 
             // Get most recent AccessKey
             string key = publishRequest.LatestAccessKey()?.Key;
-            string url = PublishRequestExtensions.AccessKeyUrl(key);
+            string url = PublishRequestExtensions.AccessKeyUrl(_accessKeyUrl, key, _appBaseUri);
 
             for (int pdfIndex = 0; pdfIndex < pdfs.Count; pdfIndex++)
             {

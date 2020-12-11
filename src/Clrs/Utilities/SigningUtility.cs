@@ -62,7 +62,7 @@ namespace OpenCredentialsPublisher.Credentials.Clrs.Utilities
         /// </summary>
         /// <param name="keysApiUrl">The keys API URL.</param>
         /// <param name="keyId">The key id.</param>
-        public CryptographicKeyDType GetCryptographicKey(string keysApiUrl, string keyId)
+        public CryptographicKeyDType GetCryptographicKey(Uri keysApiUrl, string keyId)
         {
             var credentials = _keyStore.GetSigningCredentialsAsync(keyId: keyId).Result;
 
@@ -74,7 +74,7 @@ namespace OpenCredentialsPublisher.Credentials.Clrs.Utilities
         /// </summary>
         /// <param name="keysApiUrl">The keys API URL.</param>
         /// <param name="keyId">The key id.</param>
-        public CryptographicKeyDType GetCryptographicKey(string keysApiUrl, string issuerId, OcpSigningCredentials credentials)
+        public CryptographicKeyDType GetCryptographicKey(Uri keysApiUrl, string issuerId, OcpSigningCredentials credentials)
         {
             if (credentials == null)
             {
@@ -85,7 +85,7 @@ namespace OpenCredentialsPublisher.Credentials.Clrs.Utilities
 
             return new CryptographicKeyDType
             {
-                Id = $"{keysApiUrl}/{issuerId}/{credentials.KeyId}",
+                Id = UriUtility.Combine(keysApiUrl, issuerId, credentials.KeyId),
                 Owner = issuerId,
                 PublicKeyPem = publicKey
             };
@@ -96,7 +96,7 @@ namespace OpenCredentialsPublisher.Credentials.Clrs.Utilities
         /// </summary>
         /// <param name="revocationListApiUrl"></param>
         /// <param name="keyId"></param>
-        public RevocationListDType GetRevocationList(string revocationListApiUrl, string keyId)
+        public RevocationListDType GetRevocationList(Uri revocationListApiUrl, string keyId)
         {
             var credentials = _keyStore.GetSigningCredentialsAsync(keyId: keyId).Result;
 
@@ -107,7 +107,7 @@ namespace OpenCredentialsPublisher.Credentials.Clrs.Utilities
 
             return new RevocationListDType
             {
-                Id = $"{revocationListApiUrl}/{keyId}",
+                Id = UriUtility.Combine(revocationListApiUrl, keyId),
                 Issuer = credentials.IssuerId,
                 RevokedAssertions = new List<string>()
             };
@@ -167,8 +167,6 @@ namespace OpenCredentialsPublisher.Credentials.Clrs.Utilities
             }
         }
 
-
-
         /// <summary>
         /// Return a signed (JWS) clr
         /// </summary>
@@ -198,12 +196,12 @@ namespace OpenCredentialsPublisher.Credentials.Clrs.Utilities
 
         private string SignClr(ClrDType clr, Uri baseUri, OcpSigningCredentials credentials)
         {
-            var cryptographicKey = GetCryptographicKey($"{baseUri}/keys", clr.Publisher.Id, credentials);
+            var cryptographicKey = GetCryptographicKey(KeysEndpointUri(baseUri), clr.Publisher.Id, credentials);
 
             var issuer = clr.Publisher;
             cryptographicKey.Owner = issuer.Id;
             issuer.PublicKey = cryptographicKey;
-            issuer.RevocationList = $"{baseUri}/revocations/{credentials.KeyId}";
+            issuer.RevocationList = RevocationsListUri(baseUri, credentials.KeyId);
 
             clr.Verification = new VerificationDType
             {
@@ -219,12 +217,12 @@ namespace OpenCredentialsPublisher.Credentials.Clrs.Utilities
 
         private string SignAssertion(AssertionDType assertion, Uri baseUri, OcpSigningCredentials credentials)
         {
-            var cryptographicKey = GetCryptographicKey($"{baseUri}/keys", assertion.Achievement.Issuer.Id, credentials);
+            var cryptographicKey = GetCryptographicKey(KeysEndpointUri(baseUri), assertion.Achievement.Issuer.Id, credentials);
 
             var issuer = assertion.Achievement.Issuer;
             cryptographicKey.Owner = issuer.Id;
             issuer.PublicKey = cryptographicKey;
-            issuer.RevocationList = $"{baseUri}/revocations/{credentials.KeyId}";
+            issuer.RevocationList = RevocationsListUri(baseUri, credentials.KeyId);
 
             assertion.Verification = new VerificationDType
             {
@@ -240,12 +238,12 @@ namespace OpenCredentialsPublisher.Credentials.Clrs.Utilities
 
         private string SignEndorsement(EndorsementDType endorsement, Uri baseUri, OcpSigningCredentials credentials)
         {
-            var cryptographicKey = GetCryptographicKey($"{baseUri}/keys", endorsement.Issuer.Id, credentials);
+            var cryptographicKey = GetCryptographicKey(KeysEndpointUri(baseUri), endorsement.Issuer.Id, credentials);
 
             var issuer = endorsement.Issuer;
             cryptographicKey.Owner = issuer.Id;
             issuer.PublicKey = cryptographicKey;
-            issuer.RevocationList = $"{baseUri}/revocations/{credentials.KeyId}";
+            issuer.RevocationList = RevocationsListUri(baseUri, credentials.KeyId);
 
             endorsement.Verification = new VerificationDType
             {
@@ -258,7 +256,17 @@ namespace OpenCredentialsPublisher.Credentials.Clrs.Utilities
 
             return token;
         }
-       
+
+        private string RevocationsListUri(Uri baseUri, string keyId)
+        {
+            return UriUtility.Combine(baseUri, "revocations", keyId);
+        }
+
+        private Uri KeysEndpointUri(Uri baseUri)
+        {
+            return new Uri(UriUtility.Combine(baseUri, "keys"));
+        }
+
     }
 
 }
