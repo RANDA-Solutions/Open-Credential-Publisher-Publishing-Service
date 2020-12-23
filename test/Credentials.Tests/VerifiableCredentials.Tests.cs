@@ -1,18 +1,18 @@
-using OpenCredentialsPublisher.Credentials.Cryptography;
+using OpenCredentialPublisher.Credentials.Cryptography;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using OpenCredentialsPublisher.Credentials.VerifiableCredentials;
+using OpenCredentialPublisher.Credentials.VerifiableCredentials;
 using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using OpenCredentialsPublisher.Credentials.Clrs.Interfaces;
-using OpenCredentialsPublisher.Credentials.Clrs.KeyStorage;
-using OpenCredentialsPublisher.Credentials.Clrs.Utilities;
-using OpenCredentialsPublisher.Credentials.Clrs.Clr;
+using OpenCredentialPublisher.Credentials.Clrs.Interfaces;
+using OpenCredentialPublisher.Credentials.Clrs.KeyStorage;
+using OpenCredentialPublisher.Credentials.Clrs.Utilities;
+using OpenCredentialPublisher.Credentials.Clrs.Clr;
 using System.Collections.Generic;
 
-namespace OpenCredentialsPublisher.Credentials.Tests
+namespace OpenCredentialPublisher.Credentials.Tests
 {
     public class VerifiableCredentialsTests
     {

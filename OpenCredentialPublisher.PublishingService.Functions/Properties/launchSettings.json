@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "OpenCredentialPublisher.PublishingService.Functions": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "httpPort": 30185,
+      "useSSL": false
+    }
+  }
+}

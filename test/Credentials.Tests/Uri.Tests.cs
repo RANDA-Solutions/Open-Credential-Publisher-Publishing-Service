@@ -1,10 +1,10 @@
 ﻿using NUnit.Framework;
-using OpenCredentialsPublisher.Credentials.Clrs.Utilities;
+using OpenCredentialPublisher.Credentials.Clrs.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OpenCredentialsPublisher.Credentials.Tests
+namespace OpenCredentialPublisher.Credentials.Tests
 {
     public class UriTests
     {

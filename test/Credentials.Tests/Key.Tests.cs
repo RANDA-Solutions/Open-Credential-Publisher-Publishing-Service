@@ -1,11 +1,11 @@
-﻿using OpenCredentialsPublisher.Credentials.Cryptography;
+﻿using OpenCredentialPublisher.Credentials.Cryptography;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace OpenCredentialsPublisher.Credentials.Tests
+namespace OpenCredentialPublisher.Credentials.Tests
 {
     public class KeyTests
     {
