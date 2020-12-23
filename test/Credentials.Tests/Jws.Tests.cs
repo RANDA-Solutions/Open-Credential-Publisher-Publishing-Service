@@ -3,16 +3,16 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using OpenCredentialsPublisher.Credentials.Clrs.Interfaces;
-using OpenCredentialsPublisher.Credentials.Clrs.KeyStorage;
-using OpenCredentialsPublisher.Credentials.Clrs.Utilities;
+using OpenCredentialPublisher.Credentials.Clrs.Interfaces;
+using OpenCredentialPublisher.Credentials.Clrs.KeyStorage;
+using OpenCredentialPublisher.Credentials.Clrs.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace OpenCredentialsPublisher.Credentials.Tests
+namespace OpenCredentialPublisher.Credentials.Tests
 {
     public class Jws
     {

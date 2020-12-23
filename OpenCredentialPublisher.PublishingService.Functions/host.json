@@ -1,0 +1,15 @@
+{
+  "version": "2.0",
+
+  "logging": {
+    "logLevel": {
+      "OpenCredentialPublisher": "Information"
+    },
+    "applicationInsights": {
+      "samplingExcludedTypes": "Request",
+      "samplingSettings": {
+        "isEnabled": true
+      }
+    }
+  }
+}

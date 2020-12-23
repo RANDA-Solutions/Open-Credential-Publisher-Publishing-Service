@@ -1,17 +1,17 @@
 using Newtonsoft.Json;
 using NUnit.Framework;
-using OpenCredentialsPublisher.Credentials.Clrs.Clr;
-using OpenCredentialsPublisher.Credentials.Clrs.Interfaces;
-using OpenCredentialsPublisher.Credentials.Clrs.KeyStorage;
-using OpenCredentialsPublisher.Credentials.Clrs.Utilities;
-using OpenCredentialsPublisher.Credentials.Drawing;
+using OpenCredentialPublisher.Credentials.Clrs.Clr;
+using OpenCredentialPublisher.Credentials.Clrs.Interfaces;
+using OpenCredentialPublisher.Credentials.Clrs.KeyStorage;
+using OpenCredentialPublisher.Credentials.Clrs.Utilities;
+using OpenCredentialPublisher.Credentials.Drawing;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace OpenCredentialsPublisher.Credentials.Tests
+namespace OpenCredentialPublisher.Credentials.Tests
 {
     public class ClrTests
     {

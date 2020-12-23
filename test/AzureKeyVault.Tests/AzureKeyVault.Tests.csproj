@@ -40,8 +40,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OpenCredentialsPublisher.PublishingService.Data\OpenCredentialsPublisher.PublishingService.Data.csproj" />
-    <ProjectReference Include="..\..\src\OpenCredentialsPublisher.PublishingService.Services\OpenCredentialsPublisher.PublishingService.Services.csproj" />
+    <ProjectReference Include="..\..\src\OpenCredentialPublisher.PublishingService.Data\OpenCredentialPublisher.PublishingService.Data.csproj" />
+    <ProjectReference Include="..\..\src\OpenCredentialPublisher.PublishingService.Services\OpenCredentialPublisher.PublishingService.Services.csproj" />
   </ItemGroup>
 
 </Project>
