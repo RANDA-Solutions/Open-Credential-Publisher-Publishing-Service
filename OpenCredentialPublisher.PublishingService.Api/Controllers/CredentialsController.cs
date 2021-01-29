@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OpenCredentialPublisher.PublishingService.Data;
 using OpenCredentialPublisher.PublishingService.Services;
+using System.IO;
+using System.Net.Mime;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace OpenCredentialPublisher.PublishingService.Api.Controllers
@@ -28,11 +31,15 @@ namespace OpenCredentialPublisher.PublishingService.Api.Controllers
         [HttpPost("")]
         [RequestRateLimit(Name = nameof(GetCredentials), Milliseconds = 1000)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(VerifiableCredentialResult))]
-        public async Task<IActionResult> GetCredentials([FromBody] CredentialRequest model)
+        public async Task GetCredentials([FromBody] CredentialRequest model)
         {
             var vc = await _publishService.GetCredentialsAsync(model.AccessKey);
+            Response.ContentType = MediaTypeNames.Application.Json;
+            Response.StatusCode = StatusCodes.Status200OK;
 
-            return Ok(vc);
+            var vcBytes = UTF8Encoding.UTF8.GetBytes(vc);
+            using var stream = new MemoryStream(vcBytes);
+            await stream.CopyToAsync(Response.Body);
         }
 
     }

@@ -1,7 +1,10 @@
 ﻿using Newtonsoft.Json;
+using OpenCredentialPublisher.Credentials.Clrs.Interfaces;
+using OpenCredentialPublisher.Credentials.Clrs.Utilities;
 using OpenCredentialPublisher.Credentials.Cryptography;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OpenCredentialPublisher.Credentials.VerifiableCredentials
 {
@@ -41,6 +44,24 @@ namespace OpenCredentialPublisher.Credentials.VerifiableCredentials
 
             var signature = CryptoMethods.SignString(keyAlgorithm, keyBytes, json);
             return signature;
+        }
+
+        public virtual async Task CreateProof(OcpSigningCredentials credentials, IKeyStore keyStore, ProofPurposeEnum proofPurpose, Uri verificationMethod, String challenge)
+        {
+            var proof = new Proof()
+            {
+                Created = DateTime.UtcNow,
+                Challenge = challenge,
+                ProofPurpose = proofPurpose.ToString(),
+                VerificationMethod = verificationMethod.ToString()
+            };
+
+            var json = JsonConvert.SerializeObject(this, Formatting.None);
+            json += challenge;
+
+            proof.Signature = await keyStore.SignProofAsync(credentials, json);
+
+            Proof = proof;
         }
 
         public virtual void CreateProof(KeyAlgorithmEnum keyAlgorithm, byte[] keyBytes, ProofPurposeEnum proofPurpose, Uri verificationMethod, String challenge)

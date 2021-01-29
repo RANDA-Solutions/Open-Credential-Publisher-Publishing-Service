@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OpenCredentialPublisher.PublishingService.Data;
 
 namespace OpenCredentialPublisher.PublishingService.Api.Data.Migrations.Application.OcpDb
 {
     [DbContext(typeof(OcpDbContext))]
-    partial class OcpDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210115172634_RevocationDocument")]
+    partial class RevocationDocument
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

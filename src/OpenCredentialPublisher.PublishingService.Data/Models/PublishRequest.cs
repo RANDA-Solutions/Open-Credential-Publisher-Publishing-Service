@@ -37,6 +37,11 @@ namespace OpenCredentialPublisher.PublishingService.Data
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [ForeignKey("RevocationList")]
+        public int? RevocationListId { get; set; }
+        [Column(TypeName = "nvarchar(32)")]
+        public string RevocationReason { get; set; }
+
         [Column(TypeName = "nvarchar(128)"), Required]
         public string RequestIdentity { get; set; }
 
@@ -57,6 +62,7 @@ namespace OpenCredentialPublisher.PublishingService.Data
         public virtual List<File> Files { get; set; }
         public virtual List<AccessKey> AccessKeys { get; set; }
         public virtual List<SigningKey> SigningKeys { get; set; }
+        public virtual RevocationList RevocationList { get; set; }
 
     }
 
@@ -90,7 +96,9 @@ namespace OpenCredentialPublisher.PublishingService.Data
 
         public static string AccessKeyUrl(string accessKeyUrl, string accessKey, string apiBaseUri, string scope, string endpoint, string method)
         {
-            return string.Format(accessKeyUrl, HttpUtility.UrlEncode(apiBaseUri), scope, method, endpoint, HttpUtility.UrlEncode(JsonConvert.SerializeObject(new AccessKeyPayload { AccessKey = accessKey })));
+            var url = HttpUtility.UrlEncode(apiBaseUri);
+            var payload = HttpUtility.UrlEncode(JsonConvert.SerializeObject(new AccessKeyPayload { AccessKey = accessKey }));
+            return string.Format(accessKeyUrl, url, scope, method, endpoint, payload);
         }
     }
 

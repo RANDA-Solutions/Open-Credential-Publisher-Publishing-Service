@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ using Microsoft.OpenApi.Models;
 using OpenCredentialPublisher.Credentials.Clrs.Interfaces;
 using OpenCredentialPublisher.PublishingService.Data;
 using OpenCredentialPublisher.PublishingService.Services;
+using OpenCredentialPublisher.PublishingService.Services.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -68,7 +70,7 @@ namespace OpenCredentialPublisher.PublishingService.Api
                     });
             });
 
-           
+            services.AddResponseCaching();
             services.AddControllers()
                 .AddNewtonsoftJson();
 
@@ -153,6 +155,7 @@ namespace OpenCredentialPublisher.PublishingService.Api
             services.AddTransient<IFileStoreService, AzureBlobStoreService>();
             services.AddTransient<IQueueService, AzureQueueService>();
             services.AddTransient<IPublishService, PublishService>();
+            services.AddTransient<IRevocationListService, RevocationListService>();
             services.AddTransient<IDynamicClientRegistrationService, DynamicClientRegistrationService>();
             services.AddTransient<IKeyStore, AzureKeyVaultDatabaseRegistryService>();
 
@@ -280,6 +283,22 @@ namespace OpenCredentialPublisher.PublishingService.Api
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseResponseCaching();
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.GetTypedHeaders().CacheControl =
+                    new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+                    {
+                        Public = true,
+                        MaxAge = TimeSpan.FromSeconds(10)
+                    };
+                context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] =
+                    new string[] { "Accept-Encoding" };
+
+                await next();
+            });
 
             app.UseEndpoints(endpoints =>
             {

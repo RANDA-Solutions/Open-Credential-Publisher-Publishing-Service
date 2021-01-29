@@ -29,6 +29,7 @@ namespace OpenCredentialPublisher.PublishingService.Functions
                     .Include(r => r.AccessKeys)
                     .Include(r => r.Files)
                     .Include(r => r.SigningKeys)
+                    .Include(r => r.RevocationList)
                 .Where(r => r.RequestId == requestId)
                 .FirstOrDefaultAsync();
         }

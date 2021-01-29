@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using OpenCredentialPublisher.Credentials.Clrs.Clr;
 using OpenCredentialPublisher.Credentials.Clrs.Interfaces;
+using OpenCredentialPublisher.Credentials.Cryptography;
 using OpenCredentialPublisher.Credentials.Drawing;
 using OpenCredentialPublisher.Credentials.VerifiableCredentials;
 using OpenCredentialPublisher.PublishingService.Data;
@@ -27,7 +28,7 @@ namespace OpenCredentialPublisher.PublishingService.Services
         public PublishService(IConfiguration configuration, OcpDbContext context, IFileStoreService store, IMediator mediator, IKeyStore keyStore)
         {
             _appBaseUri = configuration["AppBaseUri"];
-            _accessKeyUrl = configuration["accessKeyUrl"];
+            _accessKeyUrl = configuration["AccessKeyUrl"];
             _context = context;
             _store = store;
             _mediator = mediator;
@@ -46,10 +47,15 @@ namespace OpenCredentialPublisher.PublishingService.Services
 
             var request = new PublishRequest(requestId, clientId, id, filepath);
 
+                  
+
             _context.PublishRequests.Add(request);
 
             _context.ClrPublishLogs.Add(new ClrPublishLog(request.ClientId, request.RequestId, request.PublishState, "Request Received"));
 
+            await _context.SaveChangesAsync();
+
+            request.RevocationListId = await GetRevocationListId(request);
             await _context.SaveChangesAsync();
 
             await _mediator.Publish(new PublishProcessRequestCommand(requestId));
@@ -137,24 +143,47 @@ namespace OpenCredentialPublisher.PublishingService.Services
 
             request.PublishState = PublishStates.Revoked;
             request.ProcessingState = PublishProcessingStates.RevokedByClient;
+            request.RevocationReason = nameof(RevocationReasons.RevokedByIssuer);
+
+            if (request.RevocationListId == null)
+            {
+                request.RevocationListId = await GetRevocationListId(request);
+            }
 
             foreach (var accessKey in request.AccessKeys)
             {
                 accessKey.Expired = true;
             }
 
-            foreach (var signKey in request.SigningKeys)
-            {
-                signKey.Expired = true;
+            // Will no longer delete keys having implemented a revocation list
+            //foreach (var signKey in request.SigningKeys)
+            //{
+            //    signKey.Expired = true;
 
-                await _keyStore.DeleteKeyAsync(signKey.KeyName);
-            }
+            //    await _keyStore.DeleteKeyAsync(signKey.KeyName);
+            //}
             
             await _context.SaveChangesAsync();
 
         }
 
-        public async Task<VerifiableCredential> GetCredentialsAsync(string accessKey)
+        private async Task<int> GetRevocationListId(PublishRequest request)
+        {
+            var revocationListId = Convert.ToInt32(Math.Truncate(request.Id / 50.0)) + 1;
+            var revocationList = await _context.RevocationLists.FirstOrDefaultAsync(rl => rl.Id == revocationListId);
+            if (revocationList == null)
+            {
+                revocationList = new RevocationList
+                {
+                    Id = revocationListId,
+                    PublicId = CryptoMethods.GenerateSecretKey(32)
+                };
+                await _context.RevocationLists.AddAsync(revocationList);
+            }
+            return revocationListId;
+        }
+
+        public async Task<string> GetCredentialsAsync(string accessKey)
         {
             var request = await _context.PublishRequests
                .Include(r => r.Files)
@@ -168,9 +197,7 @@ namespace OpenCredentialPublisher.PublishingService.Services
 
             var contents = await _store.DownloadAsStringAsync(vcFileName);
 
-            var vc = JsonConvert.DeserializeObject<VerifiableCredential>(contents);
-
-            return vc;
+            return contents;
         }
     }
 

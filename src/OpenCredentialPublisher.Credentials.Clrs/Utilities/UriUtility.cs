@@ -11,16 +11,28 @@ namespace OpenCredentialPublisher.Credentials.Clrs.Utilities
         {
             const char separator = '/';
             var hasParts = parts != null && parts.Length > 0;
-            var baseUriString = baseUri.ToString();
-            if (baseUriString.EndsWith(separator) || hasParts)
+
+            if (baseUri.OriginalString.StartsWith(separator))
             {
-                // Trim all trailing '/' to ensure no excess 
-                baseUriString = baseUriString.TrimEnd(separator) + separator;
+                var uriString = baseUri.ToString().TrimEnd(separator);
+                if (hasParts)
+                {
+                    var partsList = new List<String>() { { uriString } };
+                    partsList.AddRange(parts.Select(p => p.Trim(separator)));
+                    uriString = String.Join(separator, partsList);
+                }
+                return uriString;
             }
-            var builder = new StringBuilder(baseUriString);
+            var uriBuilder = new UriBuilder(baseUri);
             if (hasParts)
-                builder = builder.AppendJoin(separator, parts.Select(p => p.Trim(separator)));
-            return builder.ToString();
+            {
+                var partsList = new List<String>();
+                if (!String.IsNullOrEmpty(uriBuilder.Path))
+                    partsList.Add(uriBuilder.Path.TrimEnd(separator));
+                partsList.AddRange(parts.Select(p => p.Trim(separator)));
+                uriBuilder.Path = String.Join(separator, partsList);
+            }
+            return uriBuilder.Uri.AbsoluteUri;
         }
     }
 }

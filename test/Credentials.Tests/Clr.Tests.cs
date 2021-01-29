@@ -21,7 +21,7 @@ namespace OpenCredentialPublisher.Credentials.Tests
         [SetUp]
         public void Setup()
         {
-            using var stream = new StreamReader(typeof(ClrTests).Assembly.GetManifestResourceStream($"{typeof(ClrTests).Namespace}.Files.nd-clr-transcript.json"));
+            using var stream = new StreamReader(typeof(ClrTests).Assembly.GetManifestResourceStream($"{typeof(ClrTests).Namespace}.Files.CLR-SIGNED-ASSERTIONS.json"));
             ndClrTranscriptJson = stream.ReadToEnd();
             _keyStorage = new FileStorage();
         }
@@ -62,8 +62,8 @@ namespace OpenCredentialPublisher.Credentials.Tests
             var transcriptClr = JsonConvert.DeserializeObject<ClrDType>(ndClrTranscriptJson);
             var signingUtility = new SigningUtility(_keyStorage);
             var baseUri = new System.Uri("https://localhost/api");
-
-            var signedClr = signingUtility.Sign(transcriptClr, baseUri);
+            var credentials = _keyStorage.GetSigningCredentialsAsync("getsignedclr-test", "test100", true).Result;
+            var signedClr = signingUtility.Sign(transcriptClr, baseUri, false, credentials);
             return signedClr;
         }
 
@@ -86,7 +86,7 @@ namespace OpenCredentialPublisher.Credentials.Tests
             var fileBytes = new byte[stream.Length];
             stream.Read(fileBytes, 0, fileBytes.Length);
             var accessKey = $"{Guid.NewGuid()}";
-            var pdfBytes = PdfUtility.AppendQRCodePage(fileBytes, $"https://opencredentialpublisher.org/access/{accessKey}");
+            var pdfBytes = PdfUtility.AppendQRCodePage(fileBytes, "https://ocp-wallet-qa.azurewebsites.net/connect?Issuer=https%3a%2f%2frandaocpservice-test.azurewebsites.net&Scope=ocp-wallet&Method=POST&Endpoint=ocp_credentials_endpoint&Payload=%7b%22AccessKey%22%3a%22cbf3af1d-ce4e-4534-b7cc-6d2bb9442389%22%7d", PdfUtility.PageOutlineTitle);
             Assert.IsTrue(pdfBytes.Length > fileBytes.Length);
             File.WriteAllBytes(Path.Combine(Directory.GetCurrentDirectory(), "pdf-with-qr-code.pdf"), pdfBytes);
         }

@@ -81,6 +81,28 @@ namespace OpenCredentialPublisher.PublishingService.Services
             return new RsaKey { IssuerId = vaultIssuerId, KeyId = keyId, Parameters = keyBundle.Key.ToRSAParameters(true) };
         }
 
+        public async Task<string> GetPublicKeyAsync(string keyId = null, string issuerId = null)
+        {
+            if (keyId == null && issuerId == null)
+                return null;
+
+            var dbKey = (issuerId == null)
+                ? await _dbContext.SigningKeys.Where(k => k.KeyName == keyId).SingleOrDefaultAsync()
+                : await _dbContext.SigningKeys.Where(k => k.KeyName == keyId && k.IssuerId == issuerId).SingleOrDefaultAsync();
+
+            var vaultKeyId = dbKey == null ? keyId : dbKey.KeyName;
+            var vaultIssuerId = dbKey == null ? issuerId : dbKey.IssuerId;
+
+            var keyBundle = await GetKeyBundleAsync(vaultKeyId);
+
+
+            if (keyBundle == null)
+            {
+                return null;
+            }
+            return await GetPublicKeyAsync(keyBundle);
+        }
+
         public async Task<(KeyBundle keyBundle, RSAParameters fullKey)> CreateLocalSigningKeyAsync(string keyName)
         {
             var kvc = GetKeyVaultClient();
@@ -157,6 +179,20 @@ namespace OpenCredentialPublisher.PublishingService.Services
             return $"{header}.{encodedContents}.{Base64UrlEncoder.Encode(signature.Result)}";
         }
 
+        public async Task<string> SignProofAsync(OcpSigningCredentials signingCredentials, string contents, string algorithm = "RS512")
+        {
+            string url = $"{signingCredentials.KeyIdentifier}";
+
+            var encodedBytes = UTF8Encoding.UTF8.GetBytes(contents);
+
+            var digest = ComputeHash(algorithm, encodedBytes);
+
+            var kvc = GetKeyVaultClient();
+            var signature = await kvc.SignAsync(url, algorithm, digest);
+
+            return Base64UrlEncoder.Encode(signature.Result);
+        }
+
         private KeyVaultClient GetKeyVaultClient() => 
             new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(
                 async (string authority, string resource, string scope) =>
@@ -175,7 +211,10 @@ namespace OpenCredentialPublisher.PublishingService.Services
         public async Task<string> GetPublicKeyAsync(OcpSigningCredentials signingCredentials)
         {
             var bundle = await GetKeyBundleAsync(signingCredentials.KeyId);
-
+            return await GetPublicKeyAsync(bundle);
+        }
+        public async Task<string> GetPublicKeyAsync(KeyBundle bundle)
+        {
             using var stream = new MemoryStream();
             using var writer = new PemWriter(stream);
             writer.WritePublicKey(bundle.Key.ToRSA(false));

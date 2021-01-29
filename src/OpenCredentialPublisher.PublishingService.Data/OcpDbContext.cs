@@ -10,6 +10,7 @@ namespace OpenCredentialPublisher.PublishingService.Data
         }
 
         public DbSet<PublishRequest> PublishRequests { get; set; }
+        public DbSet<RevocationList> RevocationLists { get; set; }
         public DbSet<AccessKey> AccessKeys { get; set; }
         public DbSet<SigningKey> SigningKeys { get; set; }
 
@@ -34,6 +35,8 @@ namespace OpenCredentialPublisher.PublishingService.Data
             modelBuilder.Entity<AccessKey>(entity => { entity.ToTable("AccessKey", "dbo"); });
             modelBuilder.Entity<SigningKey>(entity => { entity.ToTable("SigningKey", "dbo"); });
             modelBuilder.Entity<ClrPublishLog>(entity => { entity.ToTable("ClrPublishLog", "dbo"); });
+
+            modelBuilder.Entity<RevocationList>(entity => entity.HasIndex(ix => ix.PublicId).HasName("IX_RevocationList_PublicId").IsUnique());
         }
     }
 }

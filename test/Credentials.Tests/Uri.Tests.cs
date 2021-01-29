@@ -51,5 +51,13 @@ namespace OpenCredentialPublisher.Credentials.Tests
             var urlString = UriUtility.Combine(baseUri, parts);
             Assert.AreEqual(urlString, $"{baseUri}one/two/three/four/five/six");
         }
+
+        [Test]
+        public void NoDoubleSlash()
+        {
+            string[] parts = new[] { "one", "two", "three", "/four", "five/", "six" };
+            var urlString = UriUtility.Combine(baseUri, parts);
+            Assert.IsFalse(urlString.Split("//").Length > 2);
+        }
     }
 }
