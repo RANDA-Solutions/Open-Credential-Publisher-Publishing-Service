@@ -11,7 +11,7 @@ namespace OpenCredentialPublisher.PublishingService.Services
 
         Task RevokeAsync(string requestId, string clientId);
 
-        Task<VerifiableCredential> GetCredentialsAsync(string requestId);
+        Task<string> GetCredentialsAsync(string requestId);
     }
 
     

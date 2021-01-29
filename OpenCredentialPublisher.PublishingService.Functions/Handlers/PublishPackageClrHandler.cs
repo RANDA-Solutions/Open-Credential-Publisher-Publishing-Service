@@ -33,7 +33,7 @@ namespace OpenCredentialPublisher.PublishingService.Functions
                         IMediator mediator, IFileStoreService fileService) : base(blobOptions, context, log)
         {
             _appBaseUri = configuration["AppBaseUri"];
-            _accessKeyUrl = configuration["accessKeyUrl"];
+            _accessKeyUrl = configuration["AccessKeyUrl"];
 
             _mediator = mediator;
             _fileService = fileService;
@@ -128,7 +128,7 @@ namespace OpenCredentialPublisher.PublishingService.Functions
 
                 // Create QR Code from AccessKey + WebViewer URL (Where is this retrieved?)
                 // Append Page to PDF with QR Code
-                var pdfBytes = PdfUtility.AppendQRCodePage(bytes, url);
+                var pdfBytes = PdfUtility.AppendQRCodePage(bytes, url, "PublishingService");
 
                 var pdfFilename = PdfQrFilename(pdfIndex, publishRequest.RequestId);
 

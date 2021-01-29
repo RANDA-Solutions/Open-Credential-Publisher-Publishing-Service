@@ -15,12 +15,14 @@ namespace OpenCredentialPublisher.Credentials.Clrs.Interfaces
         Task<RsaKey> GetKeyAsync(string keyId = null, string issuerId = null);
 
         Task<string> CreateKeyAsync(string keyId, string issuerId = null);
+        Task<string> GetPublicKeyAsync(string keyId = null, string issuerId = null);
 
         Task DeleteKeyAsync(string keyName);
 
         Task<OcpSigningCredentials> GetSigningCredentialsAsync(string issuerId = null, string keyId = null, bool createIfNotExists = true);
 
         Task<string> SignAsync(OcpSigningCredentials signingCredentials, string contents, string algorithm = "RS512");
+        Task<string> SignProofAsync(OcpSigningCredentials signingCredentials, string contents, string algorithm = "RS512");
 
         Task<string> GetPublicKeyAsync(OcpSigningCredentials signingCredentials);
     }

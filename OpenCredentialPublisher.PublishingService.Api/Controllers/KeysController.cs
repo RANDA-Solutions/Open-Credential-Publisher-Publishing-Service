@@ -25,13 +25,13 @@ namespace OpenCredentialPublisher.PublishingService.Api.Controllers
         /// <returns>PublicKey</returns>
         [AllowAnonymous]
         [HttpGet("{issuerId}/{keyId}")]
-        [RequestRateLimit(Name = nameof(GetIssuerPublicKey), Milliseconds = 1000)]
+        [ResponseCache(Duration =60)]
         [ApiExplorerSettings(GroupName = "TODO")]
         public async Task<IActionResult> GetIssuerPublicKey(string issuerId, string keyId)
         {
             try
             {
-                var value = await _keyStore.GetKeyAsync(keyId, issuerId);
+                var value = await _keyStore.GetPublicKeyAsync(keyId, issuerId);
 
                 if (value == null)
                 { 

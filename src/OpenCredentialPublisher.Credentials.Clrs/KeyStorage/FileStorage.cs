@@ -47,6 +47,11 @@ namespace OpenCredentialPublisher.Credentials.Clrs.KeyStorage
                 : _keySet.Keys.SingleOrDefault(x => x.IssuerId == issuerId);
         }
 
+        public async Task<string> GetPublicKeyAsync(string keyId = null, string issuerId = null)
+        {
+            throw new NotImplementedException();
+        }
+
         //private RsaKeySet GetKeySet()
         //{
         //    if (_keySet == null)
@@ -64,7 +69,7 @@ namespace OpenCredentialPublisher.Credentials.Clrs.KeyStorage
         //    return _keySet;
         //}
 
-        
+
         public async Task<string> CreateKeyAsync(string keyId, string issuerId = null)
         {
             var key = CreateRsaSecurityKey();
@@ -178,6 +183,11 @@ namespace OpenCredentialPublisher.Credentials.Clrs.KeyStorage
         }
 
         public Task DeleteKeyAsync(string keyName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> SignProofAsync(OcpSigningCredentials signingCredentials, string contents, string algorithm = "RS512")
         {
             throw new NotImplementedException();
         }

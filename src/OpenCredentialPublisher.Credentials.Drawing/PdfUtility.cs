@@ -2,13 +2,16 @@
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace OpenCredentialPublisher.Credentials.Drawing
 {
     public class PdfUtility
     {
-        public static byte[] AppendQRCodePage(byte[] pdfBytes, string url)
+        public const string PageOutlineBase = "OpenCredentialPublisher-QRCode-";
+        public const string PageOutlineTitle = PageOutlineBase + "PublishingService";
+        public static byte[] AppendQRCodePage(byte[] pdfBytes, string url, string sourceApplicationName)
         {
             MyFontResolver.Apply();
 
@@ -18,6 +21,7 @@ namespace OpenCredentialPublisher.Credentials.Drawing
             var page = document.AddPage();
             var graphics = XGraphics.FromPdfPage(page);
 
+            document.Outlines.Add(new PdfSharp.Pdf.PdfOutline(PageOutlineBase + sourceApplicationName, page));
 
             const double margin = 10;
 
@@ -69,11 +73,21 @@ namespace OpenCredentialPublisher.Credentials.Drawing
                 XStringFormats.Center);
 
 
-            var urlY = clickTextY + 40;
+            var displayUrl = url;
+            if (url.Length > 93)
+            {
+                var splitLocation = displayUrl.IndexOf("/", displayUrl.IndexOf("//") + 2);
+                displayUrl = displayUrl.Substring(0, splitLocation);
+            }
+            var urlY = clickTextY + 30;
             var urlFont = new XFont("Verdana", 12, XFontStyle.Underline);
-            graphics.DrawString(url, urlFont,
-                XBrushes.Blue, new XRect(0, urlY, page.Width, 20),
-                XStringFormats.Center);
+            var weblinkRect = new XRect(5, urlY - 400, page.Width - 5, 60);
+            var pdfRectangle = new PdfRectangle(weblinkRect);
+
+            page.AddWebLink(pdfRectangle, url);
+            var urlRect = new XRect(5, urlY, page.Width - 5, 60);
+            graphics.DrawString(displayUrl, urlFont,
+                XBrushes.Blue, urlRect, XStringFormats.Center);
 
             //var accessKeyY = urlY + 20;
             //graphics.DrawString($"Access Key: {accessKey}", pageFont,
@@ -81,6 +95,29 @@ namespace OpenCredentialPublisher.Credentials.Drawing
             //    XStringFormats.CenterLeft);
             graphics.Save();
 
+            using var saveStream = new MemoryStream();
+            document.Save(saveStream);
+            return saveStream.ToArray();
+        }
+
+        public static byte[] RemoveExistingQRCode(byte[] pdfBytes, string sourceApplicationName)
+        {
+            MyFontResolver.Apply();
+
+            System.Text.Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            using var stream = new MemoryStream(pdfBytes, false);
+            using var document = PdfReader.Open(stream, PdfDocumentOpenMode.Modify);
+            if (document.Outlines.Any())
+            {
+                var outlines = document.Outlines.Where(o => o.Title.Contains(PageOutlineBase));
+                foreach (var outline in outlines)
+                {
+                    if (outline.Title != (PageOutlineBase + sourceApplicationName))
+                    {
+                        document.Pages.Remove(outline.DestinationPage);
+                    }
+                }
+            }
             using var saveStream = new MemoryStream();
             document.Save(saveStream);
             return saveStream.ToArray();

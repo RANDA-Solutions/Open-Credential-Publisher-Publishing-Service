@@ -126,7 +126,7 @@ namespace OpenCredentialPublisher.PublishingService.Functions
             var credentials = new OcpSigningCredentials()
             {
                 KeyId = key.KeyName,
-                Algorithm = SecurityAlgorithms.RsaSha256,
+                Algorithm = SecurityAlgorithms.RsaSha512,
                 KeyIdentifier = keyIdentifier
             };
 
@@ -135,7 +135,7 @@ namespace OpenCredentialPublisher.PublishingService.Functions
             var signingUtility = new SigningUtility(_keyStore);
 
             // Sign CLR
-            var signedClr = signingUtility.Sign(clr, baseUri, credentials: credentials);
+            var signedClr = signingUtility.Sign(clr, new Uri(UriUtility.Combine(baseUri, "api")), credentials: credentials);
 
             var signedFilename = ClrWithSignatureFilename(publishRequest.RequestId);
 
@@ -154,26 +154,22 @@ namespace OpenCredentialPublisher.PublishingService.Functions
             clrSet.SignedClrs ??= new List<string>();
             clrSet.SignedClrs.Add(signedClr);
             clrSet.Clrs ??= new List<ClrDType>();
-            clrSet.Clrs.Add(clr);
-
-            var accessKey = publishRequest.LatestAccessKey()?.Key;
+            //clrSet.Clrs.Add(clr);
 
             var verifiableCredential = new VerifiableCredential
             {
                 Contexts = new List<string>(new[] { "https://www.w3.org/2018/credentials/v1", "https://contexts.ward.guru/clr_v1p0.jsonld" }),
                 Types = new List<string>(new[] { "VerifiableCredential" }),
-                Id = UriUtility.Combine(baseUri, "credentials", publishRequest.RequestId),
-                Issuer = UriUtility.Combine(baseUri, "issuers", publishRequest.ClientId),
+                Id = UriUtility.Combine(baseUri, "api", "credentials", publishRequest.RequestId),
+                Issuer = UriUtility.Combine(baseUri, "api", "issuers", publishRequest.ClientId),
                 IssuanceDate = DateTime.UtcNow,
-                CredentialSubjects = new List<ICredentialSubject>(new[] { clrSet })
+                CredentialSubjects = new List<ICredentialSubject>(new[] { clrSet }),
+                CredentialStatus = new CredentialStatus { Id = UriUtility.Combine(baseUri, "api", "status", publishRequest.RevocationList.PublicId), Type = nameof(RevocationList) }
             };
-
-            var algorithm = KeyAlgorithmEnum.RSA;
-            var keys = CryptoMethods.GenerateKey(algorithm);
 
             var challenge = Guid.NewGuid().ToString();
             verifiableCredential.Proof = null;
-            verifiableCredential.CreateProof(algorithm, keys, ProofPurposeEnum.assertionMethod, new Uri($"{baseUri}/keys/{Guid.NewGuid()}"), challenge);
+            await verifiableCredential.CreateProof(credentials, _keyStore, ProofPurposeEnum.assertionMethod, new Uri(UriUtility.Combine(baseUri, "api", "keys", key.IssuerId, key.KeyName)), challenge);
 
             var vcFilename = VcWrappedClrFilename(publishRequest.RequestId);
 

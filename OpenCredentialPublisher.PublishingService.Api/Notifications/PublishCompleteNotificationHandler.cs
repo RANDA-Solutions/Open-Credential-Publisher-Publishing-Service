@@ -20,7 +20,7 @@ namespace OpenCredentialPublisher.PublishingService.Api
         public async Task Handle(PublishProcessRequestCommand notification, CancellationToken cancellationToken)
         {
 #if DEBUG
-            await _queueService.SendMessageAsync(PublishQueues.PublishRequest, JsonConvert.SerializeObject(notification), TimeSpan.FromSeconds(30));
+            await _queueService.SendMessageAsync(PublishQueues.PublishRequest, JsonConvert.SerializeObject(notification), TimeSpan.FromSeconds(2));
 #else
             await _queueService.SendMessageAsync(PublishQueues.PublishRequest, JsonConvert.SerializeObject(notification));
 #endif
