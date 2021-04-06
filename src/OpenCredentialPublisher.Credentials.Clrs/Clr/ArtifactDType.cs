@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace OpenCredentialPublisher.Credentials.Clrs.Clr
 {
@@ -12,6 +14,9 @@ namespace OpenCredentialPublisher.Credentials.Clrs.Clr
         public string Name { get; set; }
         [JsonProperty("url", NullValueHandling = NullValueHandling.Ignore)]
         public string Url { get; set; }
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalData { get; set; }
     }
 
 }

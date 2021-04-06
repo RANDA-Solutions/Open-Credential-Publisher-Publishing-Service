@@ -10,5 +10,10 @@ namespace OpenCredentialPublisher.PublishingService.Api
     {
         public const string Localhost = "Localhost";
     }
+
+    public static class ClaimConstants
+    {
+        public const string AccessKeyBaseUri = "AccessKeyBaseUri";
+    }
     
 }

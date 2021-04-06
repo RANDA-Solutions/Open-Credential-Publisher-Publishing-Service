@@ -2,6 +2,6 @@
 {
     public class ConfigurationRequest
     {
-
+        public string AccessKeyBaseUri { get; set; }
     }
 }

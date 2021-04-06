@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 
 namespace OpenCredentialPublisher.Credentials.Clrs.Clr
@@ -22,16 +23,30 @@ namespace OpenCredentialPublisher.Credentials.Clrs.Clr
         public string Type { get; set; }
         [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
         public AddressDType Address { get; set; }
+        [JsonProperty("additionalName", NullValueHandling = NullValueHandling.Ignore)]
+        public string AdditionalName { get; set; }
+        [JsonProperty("birthDate", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTime? BirthDate { get; set; }
         [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
         public string Description { get; set; }
         [JsonProperty("email", NullValueHandling = NullValueHandling.Ignore)]
         public string Email { get; set; }
+        [JsonProperty("familyName", NullValueHandling = NullValueHandling.Ignore)]
+        public string FamilyName { get; set; }
+        [JsonProperty("givenName", NullValueHandling = NullValueHandling.Ignore)]
+        public string GivenName { get; set; }
         [JsonProperty("endorsements", NullValueHandling = NullValueHandling.Ignore)]
         public List<EndorsementDType> Endorsements { get; set; }
+        [JsonProperty("identifiers", NullValueHandling = NullValueHandling.Ignore)]
+        public List<SystemIdentifierDType> Identifiers { get; set; }
         [JsonProperty("image", NullValueHandling = NullValueHandling.Ignore)]
         public string Image { get; set; }
         [JsonProperty("name", Required = Required.Always)]
         public string Name { get; set; }
+        [JsonProperty("official", NullValueHandling = NullValueHandling.Ignore)]
+        public string Official { get; set; }
+        [JsonProperty("parentOrg", NullValueHandling = NullValueHandling.Ignore)]
+        public ProfileDType ParentOrg { get; set; }
         [JsonProperty("signedEndorsements", NullValueHandling = NullValueHandling.Ignore)]
         public List<string> SignedEndorsements { get; set; }
         [JsonProperty("sourcedId", NullValueHandling = NullValueHandling.Ignore)]

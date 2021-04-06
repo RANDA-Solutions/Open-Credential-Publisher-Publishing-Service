@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OpenCredentialPublisher.Credentials.Clrs.Converters;
 using System.Collections.Generic;
 
@@ -31,6 +32,8 @@ namespace OpenCredentialPublisher.Credentials.Clrs.Clr
         /// </summary>
         [JsonProperty("verificationProperty", NullValueHandling = NullValueHandling.Ignore)]
         public string VerificationProperty { get; set; }
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalData { get; set; }
     }
 
 }

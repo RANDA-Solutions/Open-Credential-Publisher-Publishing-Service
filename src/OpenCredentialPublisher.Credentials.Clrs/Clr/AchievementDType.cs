@@ -46,6 +46,10 @@ namespace OpenCredentialPublisher.Credentials.Clrs.Clr
         /// </summary>
         [JsonProperty("fieldOfStudy", NullValueHandling = NullValueHandling.Ignore)]
         public string FieldOfStudy { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("identifiers", NullValueHandling = NullValueHandling.Ignore)]
+        public List<SystemIdentifierDType> Identifiers { get; set; }
+
         /// <summary>
         /// IRI of an image representing the achievement. May be a Data URI or the URL where the image may be found. 
         /// </summary>

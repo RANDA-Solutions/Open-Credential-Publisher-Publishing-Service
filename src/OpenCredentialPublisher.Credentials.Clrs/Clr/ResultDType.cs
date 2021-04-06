@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 namespace OpenCredentialPublisher.Credentials.Clrs.Clr
@@ -18,12 +19,16 @@ namespace OpenCredentialPublisher.Credentials.Clrs.Clr
         public List<AlignmentDType> Alignments { get; set; }
         [JsonProperty("resultDescription", Required = Required.Always)]
         public string ResultDescription { get; set; }
-
+        [JsonProperty("status", NullValueHandling = NullValueHandling.Ignore)]
+        public string Status { get; set; }
         /// <summary>
         /// A grade or value representing the result of the performance, or demonstration, of the achievement.  For example, 'A' if the recipient received a grade of A in the class.
         /// </summary>
         [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
         public string Value { get; set; }
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalData { get; set; }
     }
 
 }

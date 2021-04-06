@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -35,8 +36,14 @@ namespace OpenCredentialPublisher.Credentials.Clrs.Clr
         [JsonProperty("signedAssertions")]
         [RegularExpression(@"^([A-Za-z0-9-_]{4,})\.([-A-Za-z0-9-_]{4,})\.([A-Za-z0-9-_]{4,})$")]
         public List<string> SignedAssertions { get; set; }
+        [JsonProperty("signedEndorsements")]
+        [RegularExpression(@"^([A-Za-z0-9-_]{4,})\.([-A-Za-z0-9-_]{4,})\.([A-Za-z0-9-_]{4,})$")]
+        public List<string> SignedEndorsements { get; set; }
         [JsonProperty("verification")]
         public VerificationDType Verification { get; set; }
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalData { get; set; }
     }
 
 }

@@ -19,12 +19,14 @@ namespace OpenCredentialPublisher.Credentials.Clrs.Clr
         public AchievementDType Achievement { get; set; }
         [JsonProperty("creditsEarned", NullValueHandling = NullValueHandling.Ignore)]
         public float? CreditsEarned { get; set; }
-        [JsonProperty("endDate", NullValueHandling = NullValueHandling.Ignore)]
-        public DateTime? EndDate { get; set; }
+        [JsonProperty("activityEndDate", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTime? ActivityEndDate { get; set; }
         [JsonProperty("endorsements", NullValueHandling = NullValueHandling.Ignore)]
         public List<EndorsementDType> Endorsements { get; set; }
         [JsonProperty("evidence", NullValueHandling = NullValueHandling.Ignore)]
         public List<EvidenceDType> Evidence { get; set; }
+        [JsonProperty("expires", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTime? Expires { get; set; }
         [JsonProperty("image", NullValueHandling = NullValueHandling.Ignore)]
         public string Image { get; set; }
         [JsonProperty("issuedOn", NullValueHandling = NullValueHandling.Ignore)]
@@ -49,8 +51,8 @@ namespace OpenCredentialPublisher.Credentials.Clrs.Clr
         [JsonProperty("signedEndorsements", NullValueHandling = NullValueHandling.Ignore)]
         [RegularExpression(@"^([A-Za-z0-9-_]{4,})\.([-A-Za-z0-9-_]{4,})\.([A-Za-z0-9-_]{4,})$")]
         public List<string> SignedEndorsements { get; set; }
-        [JsonProperty("startDate", NullValueHandling = NullValueHandling.Ignore)]
-        public DateTime? StartDate { get; set; }
+        [JsonProperty("activityStartDate", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTime? ActivityStartDate { get; set; }
         [JsonProperty("term", NullValueHandling = NullValueHandling.Ignore)]
         public string Term { get; set; }
         [JsonProperty("verification", NullValueHandling = NullValueHandling.Ignore)]

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 namespace OpenCredentialPublisher.Credentials.Clrs.Clr
@@ -31,6 +32,8 @@ namespace OpenCredentialPublisher.Credentials.Clrs.Clr
         public string ValueMin { get; set; }
         [JsonProperty("valueMax", NullValueHandling = NullValueHandling.Ignore)]
         public string ValueMax { get; set; }
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalData { get; set; }
     }
 
 }

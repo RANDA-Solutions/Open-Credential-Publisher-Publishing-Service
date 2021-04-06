@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OpenCredentialPublisher.PublishingService.Data;
 using OpenCredentialPublisher.PublishingService.Services;
 using System;
@@ -13,10 +15,12 @@ namespace OpenCredentialPublisher.PublishingService.Api.Controllers
     public class RequestsController : ControllerBase
     {
         private readonly IPublishService _publishService;
+        private readonly ConfigurationDbContext _configurationDbContext;
 
-        public RequestsController(IPublishService publishService)
+        public RequestsController(IPublishService publishService, ConfigurationDbContext configurationDbContext)
         {
             _publishService = publishService;
+            _configurationDbContext = configurationDbContext;
         }
 
         /// <summary>
@@ -30,8 +34,14 @@ namespace OpenCredentialPublisher.PublishingService.Api.Controllers
         public async Task<IActionResult> InquirePublishStatus([FromRoute] string requestId)
         {
             string clientId = User.ClientId();
+            Func<string, Task<string>> getAccesskeyClaim = async clientId => {
+                var client = await _configurationDbContext.Clients.Include(cl => cl.Claims).AsNoTracking().FirstOrDefaultAsync(c => c.ClientId == clientId);
+                var claim = client.Claims.Find(cl => cl.Type == ClaimConstants.AccessKeyBaseUri);
+                return claim?.Value;
+            };
 
-            PublishStatusResult response = await _publishService.GetAsync(requestId, clientId, ScopeConstants.Wallet, DiscoveryDocumentCustomEndpointsConstants.CredentialsEndpoint, HttpMethods.Post);
+            var accessKeyBaseUri = User.AccessKeyBaseUri() ?? await getAccesskeyClaim(clientId); 
+            PublishStatusResult response = await _publishService.GetAsync(requestId, clientId, accessKeyBaseUri, ScopeConstants.Wallet, DiscoveryDocumentCustomEndpointsConstants.CredentialsEndpoint, HttpMethods.Post);
 
             if (response == null)
                 return NotFound();

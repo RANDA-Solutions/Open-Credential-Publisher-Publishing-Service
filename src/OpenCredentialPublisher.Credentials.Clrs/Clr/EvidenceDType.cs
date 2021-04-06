@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 namespace OpenCredentialPublisher.Credentials.Clrs.Clr
@@ -24,6 +25,8 @@ namespace OpenCredentialPublisher.Credentials.Clrs.Clr
         /// </summary>
         [JsonProperty("narrative", NullValueHandling = NullValueHandling.Ignore)]
         public string Narrative { get; set; }
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalData { get; set; }
     }
 
 }
