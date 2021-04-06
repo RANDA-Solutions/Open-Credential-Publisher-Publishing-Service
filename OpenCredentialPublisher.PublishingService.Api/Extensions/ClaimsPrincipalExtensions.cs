@@ -8,6 +8,11 @@ namespace OpenCredentialPublisher.PublishingService.Api
         {
             return user.FindFirst(u => u.Type == "client_id")?.Value;
         }
+
+        public static string AccessKeyBaseUri(this ClaimsPrincipal user)
+        {
+            return user.FindFirst(u => u.Type.EndsWith(ClaimConstants.AccessKeyBaseUri))?.Value;
+        }
     }
  
 }

@@ -92,30 +92,34 @@ namespace OpenCredentialPublisher.PublishingService.Functions
             await SaveChangesAsync();
 
             // Read File
-            var contents = await _fileService.DownloadAsStringAsync(publishRequest.GetOriginalClr()?.FileName);
+           // var contents = await _fileService.DownloadAsStringAsync(publishRequest.GetOriginalClr()?.FileName);
 
             // Inspect Package, Does it have PDF?
-            var clr = JsonConvert.DeserializeObject<ClrDType>(contents);
+            //var clr = JsonConvert.DeserializeObject<ClrDType>(contents);
 
-            var artifacts = clr.Assertions?
-                .Where(a => a.Evidence != null)
-                .SelectMany(a => a.Evidence)?
-                    .Where(e => e.Artifacts != null)
-                    .SelectMany(e => e.Artifacts)
-                        .ToList();
+            //var artifacts = clr.Assertions?
+            //    .Where(a => a.Evidence != null)
+            //    .SelectMany(a => a.Evidence)?
+            //        .Where(e => e.Artifacts != null)
+            //        .SelectMany(e => e.Artifacts)
+            //            .ToList();
 
-            var pdfs = artifacts?
-                .Where(a => a.Url != null && a.Url.StartsWith("data:application/pdf"))
-                .ToList();
+            //var pdfs = artifacts?
+            //    .Where(a => a.Url != null && a.Url.StartsWith("data:application/pdf"))
+            //    .ToList();
 
-            var pdfCount = pdfs?.Count ?? 0;
-
+            //var pdfCount = pdfs?.Count ?? 0;
+            //var hasPdf = pdfCount > 0;
             // Create Access Key, Update Record (AccessKey, ClrHasPdf)
-            publishRequest.ContainsPdf = (pdfCount > 0);
+            //publishRequest.ContainsPdf = hasPdf;
             publishRequest.AccessKeys.Add(AccessKey.Create());
 
-            publishRequest.ProcessingState = (pdfCount > 0) ? PublishProcessingStates.PublishPackageClrReady : PublishProcessingStates.PublishSignClrReady;
-            publishRequest.PublishState = (pdfCount > 0) ? PublishStates.Packaging : PublishStates.SignClr;
+            // QRCode on PDF is not currently necessary
+            //publishRequest.ProcessingState = (pdfCount > 0) ? PublishProcessingStates.PublishPackageClrReady : PublishProcessingStates.PublishSignClrReady;
+            //publishRequest.PublishState = (pdfCount > 0) ? PublishStates.Packaging : PublishStates.SignClr;
+
+            publishRequest.ProcessingState = PublishProcessingStates.PublishSignClrReady;
+            publishRequest.PublishState = PublishStates.SignClr;
 
             Log.LogInformation($"Next PublishState: '{publishRequest.PublishState}, Next ProcessingState: '{publishRequest.ProcessingState}'");
 

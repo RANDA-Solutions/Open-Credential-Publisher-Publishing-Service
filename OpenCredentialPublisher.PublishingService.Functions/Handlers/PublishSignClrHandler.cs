@@ -103,8 +103,8 @@ namespace OpenCredentialPublisher.PublishingService.Functions
             await SaveChangesAsync();
 
             // Read File
-            var latestFile = publishRequest.ContainsPdf.Value ? publishRequest.GetQrCodeImprintedClr() : publishRequest.GetOriginalClr();
-
+            //var latestFile = publishRequest.ContainsPdf.Value ? publishRequest.GetQrCodeImprintedClr() : publishRequest.GetOriginalClr();
+            var latestFile = publishRequest.GetOriginalClr();
             // Download PdfQrCodeClrFilePath or OriginalClrFilePath
             var contents = await _fileService.DownloadAsStringAsync(latestFile.FileName);
 
@@ -158,7 +158,7 @@ namespace OpenCredentialPublisher.PublishingService.Functions
 
             var verifiableCredential = new VerifiableCredential
             {
-                Contexts = new List<string>(new[] { "https://www.w3.org/2018/credentials/v1", "https://contexts.ward.guru/clr_v1p0.jsonld" }),
+                Contexts = new List<string>(new[] { "https://www.w3.org/2018/credentials/v1", "https://purl.imsglobal.org/spec/clr/v1p0/context/clr_v1p0.jsonld" }),
                 Types = new List<string>(new[] { "VerifiableCredential" }),
                 Id = UriUtility.Combine(baseUri, "api", "credentials", publishRequest.RequestId),
                 Issuer = UriUtility.Combine(baseUri, "api", "issuers", publishRequest.ClientId),

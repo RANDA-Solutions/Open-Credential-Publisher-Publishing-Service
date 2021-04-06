@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace OpenCredentialPublisher.Credentials.Clrs.Clr
 {
@@ -20,6 +22,9 @@ namespace OpenCredentialPublisher.Credentials.Clrs.Clr
         public string PostOfficeBoxNumber { get; set; }
         [JsonProperty("streetAddress", NullValueHandling = NullValueHandling.Ignore)]
         public string StreetAddress { get; set; }
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalData { get; set; }
     }
 
 }

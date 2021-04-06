@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace OpenCredentialPublisher.Credentials.Clrs.Clr
 {
@@ -21,6 +23,9 @@ namespace OpenCredentialPublisher.Credentials.Clrs.Clr
         public bool? Revoked { get; set; }
         [JsonProperty("verification", Required = Required.Always)]
         public VerificationDType Verification { get; set; }
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalData { get; set; }
     }
 
 }

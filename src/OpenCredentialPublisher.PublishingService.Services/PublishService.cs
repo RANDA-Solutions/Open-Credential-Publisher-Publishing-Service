@@ -24,11 +24,13 @@ namespace OpenCredentialPublisher.PublishingService.Services
         private readonly IKeyStore _keyStore;
         private readonly string _appBaseUri;
         private readonly string _accessKeyUrl;
+        private readonly string _accessKeyQueryString;
 
         public PublishService(IConfiguration configuration, OcpDbContext context, IFileStoreService store, IMediator mediator, IKeyStore keyStore)
         {
             _appBaseUri = configuration["AppBaseUri"];
             _accessKeyUrl = configuration["AccessKeyUrl"];
+            _accessKeyQueryString = configuration["AccessKeyQueryString"];
             _context = context;
             _store = store;
             _mediator = mediator;
@@ -68,7 +70,7 @@ namespace OpenCredentialPublisher.PublishingService.Services
         }
 
 
-        public async Task<PublishStatusResult> GetAsync(string requestId, string clientId, string scope, string endpoint, string method)
+        public async Task<PublishStatusResult> GetAsync(string requestId, string clientId, string accessKeyBaseUrl, string scope, string endpoint, string method)
         {
             var request = await _context.PublishRequests
                 .Include(r => r.AccessKeys)
@@ -87,7 +89,7 @@ namespace OpenCredentialPublisher.PublishingService.Services
 
             if (accessKey != null && request.PublishState == PublishStates.Complete)
             {
-                var url = PublishRequestExtensions.AccessKeyUrl(_accessKeyUrl, accessKey, _appBaseUri, scope, endpoint, method);
+                var url = PublishRequestExtensions.AccessKeyUrl($"{accessKeyBaseUrl ?? _accessKeyUrl}?{_accessKeyQueryString}", accessKey, _appBaseUri, scope, endpoint, method);
 
                 var qrCode = new ClrPublishQrCode 
                 {

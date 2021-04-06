@@ -7,7 +7,7 @@ namespace OpenCredentialPublisher.PublishingService.Services
     public interface IPublishService
     {
         Task<string> ProcessRequestAsync(string id, ClrDType clr, string clientId);
-        Task<PublishStatusResult> GetAsync(string requestId, string clientId, string scope, string endpoint, string method);
+        Task<PublishStatusResult> GetAsync(string requestId, string clientId, string walletBaseUri, string scope, string endpoint, string method);
 
         Task RevokeAsync(string requestId, string clientId);
 

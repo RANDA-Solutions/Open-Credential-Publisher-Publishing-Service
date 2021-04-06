@@ -1,5 +1,6 @@
 ﻿using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.EntityFramework.Stores;
 using IdentityServer4.Extensions;
 using IdentityServer4.Services;
 using MediatR;
@@ -133,7 +134,7 @@ namespace OpenCredentialPublisher.PublishingService.Api
                     builder.UseSqlServer(idsvrConnectionString,
                         sql => sql.MigrationsAssembly(migrationsAssembly));
                 };
-            });
+            }).AddClientStore<ClientStore>();
 
 
             services.AddDbContext<OcpDbContext>(builder =>

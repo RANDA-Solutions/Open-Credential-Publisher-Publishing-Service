@@ -37,7 +37,6 @@ namespace OpenCredentialPublisher.PublishingService.Api
                 AllowedGrantTypes = IdentityServer4.Models.GrantTypes.ClientCredentials.Append("refresh_token").ToList(),
                 ClientSecrets = new List<Secret> { new Secret(secret.Sha256()) },
                 AllowedScopes = scopes,
-                
             };
 
             _context.Clients.Add(client.ToEntity());
@@ -46,7 +45,7 @@ namespace OpenCredentialPublisher.PublishingService.Api
 
             return new OcpDynamicClientRegistrationResult()
             {
-                ClientId = client.ClientId,
+                ClientId = client.ClientId,   
                 ClientName = client.ClientName,
                 ClientSecret = secret,
                 ClientIdIssuedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
