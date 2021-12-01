@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using OpenCredentialPublisher.Credentials.Clrs.Interfaces;
 using OpenCredentialPublisher.Credentials.Clrs.Utilities;
 using OpenCredentialPublisher.Credentials.Cryptography;
@@ -50,6 +51,7 @@ namespace OpenCredentialPublisher.Credentials.VerifiableCredentials
         {
             var proof = new Proof()
             {
+                Type = credentials.Algorithm == SecurityAlgorithms.RsaSha512 ? ProofTypeEnum.RsaSignature2018.ToString() : ProofTypeEnum.Ed25519Signature2018.ToString(),
                 Created = DateTime.UtcNow,
                 Challenge = challenge,
                 ProofPurpose = proofPurpose.ToString(),

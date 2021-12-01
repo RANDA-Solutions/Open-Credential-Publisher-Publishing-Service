@@ -121,7 +121,6 @@ namespace OpenCredentialPublisher.PublishingService.Services
         public async Task<KeyBundle> CreateKeyBundleAsync(string keyId, string issuerId)
         {
             var kvc = GetKeyVaultClient();
-
             return await kvc.CreateKeyAsync(_options.KeyVaultBaseUri, keyId, "RSA");
         }
 
