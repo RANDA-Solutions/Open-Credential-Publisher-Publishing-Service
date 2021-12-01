@@ -10,6 +10,9 @@
         public string AzureAppClientSecret { get; set; }
         // This is available as "DNS Name" from the overview page of the Key Vault.
         public string KeyVaultBaseUri { get; set; }
+
+        public string CertificateName { get; set; }
+        public string AzureTenantId { get; set; }
     }
 
 }

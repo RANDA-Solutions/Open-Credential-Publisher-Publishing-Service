@@ -1,4 +1,8 @@
-﻿using IdentityServer4.EntityFramework.DbContexts;
+﻿using Azure.Core;
+using Azure.Identity;
+using Azure.Security.KeyVault.Certificates;
+using Azure.Security.KeyVault.Secrets;
+using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.EntityFramework.Stores;
 using IdentityServer4.Extensions;
@@ -50,7 +54,8 @@ namespace OpenCredentialPublisher.PublishingService.Api
 
             services.AddOptions();
 
-            services.Configure<AzureKeyVaultOptions>(Configuration.GetSection(AzureKeyVaultOptions.Section));
+            var keyVaultSection = Configuration.GetSection(AzureKeyVaultOptions.Section);
+            services.Configure<AzureKeyVaultOptions>(keyVaultSection);
             services.Configure<AzureBlobOptions>(Configuration.GetSection(AzureBlobOptions.Section));
             services.Configure<AzureQueueOptions>(Configuration.GetSection(AzureQueueOptions.Section));
 
@@ -111,9 +116,21 @@ namespace OpenCredentialPublisher.PublishingService.Api
                         options.Events.RaiseInformationEvents = true;
                         options.Events.RaiseFailureEvents = true;
                         options.Events.RaiseSuccessEvents = true;
-                    })
-                // not recommended for production - you need to store your key material somewhere secure
-                .AddDeveloperSigningCredential();
+                    });
+
+            if (Environment.IsDevelopmentOrLocalhost())
+            {
+                ids.AddDeveloperSigningCredential();
+            }
+            else
+            {
+                var keyVaultOptions = keyVaultSection.Get<AzureKeyVaultOptions>();
+                var credential = new ClientSecretCredential(keyVaultOptions.AzureTenantId, keyVaultOptions.AzureAppClientId, keyVaultOptions.AzureAppClientSecret);
+                var certificateClient = new CertificateClient(new Uri(keyVaultOptions.KeyVaultBaseUri), credential);
+                var certificateResponse = certificateClient.DownloadCertificate(keyVaultOptions.CertificateName);
+                ids.AddSigningCredential(certificateResponse.Value);
+            }
+               
 
             // EF client, scope, and persisted grant stores
             ids.AddOperationalStore(options =>
