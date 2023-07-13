@@ -29,6 +29,9 @@ namespace OpenCredentialPublisher.PublishingService.Data
                         .HasName("CIX_PublishRequest_Id")
                         .IsUnique()
                         .IsClustered(clustered: true);
+
+                entity.Property(x => x.PushAfterPublish)
+                        .HasDefaultValue(false);
             });
 
             modelBuilder.Entity<File>(entity => { entity.ToTable("File", "dbo"); });

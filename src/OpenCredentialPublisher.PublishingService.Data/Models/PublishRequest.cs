@@ -19,12 +19,15 @@ namespace OpenCredentialPublisher.PublishingService.Data
             this.SigningKeys = new List<SigningKey>();
         }
 
-        public PublishRequest(string requestId, string clientId, string requestIdentity, string filepath) : this()
+        public PublishRequest(string requestId, string clientId, string requestIdentity, string filepath, bool pushAfterPublish, string appUri, string pushUri) : this()
         {
             this.ClientId = clientId;
             this.RequestId = requestId;
             this.RequestIdentity = requestIdentity;
             this.Files.Add(File.CreateOriginal(filepath));
+            this.PushAfterPublish = pushAfterPublish;
+            this.PushUri = pushUri;
+            this.AppUri = appUri;
         }
 
         [Key]
@@ -49,6 +52,12 @@ namespace OpenCredentialPublisher.PublishingService.Data
         public DateTimeOffset CreateTimestamp { get; set; }
 
         public bool? ContainsPdf { get; set; }
+
+        public bool PushAfterPublish { get; set; }
+        [Column(TypeName = "nvarchar(256)")]
+        public string PushUri { get; set; }
+        [Column(TypeName = "nvarchar(256)")]
+        public string AppUri { get; set; }
 
         [Column(TypeName = "datetimeoffset(7)")]
         public DateTimeOffset? PackageSignedTimestamp { get; set; }

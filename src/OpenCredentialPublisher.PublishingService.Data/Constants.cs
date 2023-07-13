@@ -29,6 +29,7 @@
         public const string PublishPackageClr = "pub-packageclr";
         public const string PublishSignClr = "pub-signclr";
         public const string PublishNotify = "pub-notify";
+        public const string PublishPush = "pub-push";
     }
 
     public static class PublishStates
@@ -38,6 +39,7 @@
         public const string SignClr = "Signing";
         public const string Complete = "Complete";
         public const string Revoked = "Revoked";
+        public const string Pushing = "Pushing";
     }
 
     
@@ -59,6 +61,9 @@
         public const string Complete = "Complete";
         public const string RevokedByClient = "PubRevoke-ByClient";
         public const string RevokedByIssuer = "PubRevoke-ByIssuer";
+        public const string PublishPushReady = "PubPush-Ready";
+        public const string PublishPushProcessing = "PubPush-Processing";
+        public const string PublishPushFailure = "PubPush-Failure";
 
     }
 

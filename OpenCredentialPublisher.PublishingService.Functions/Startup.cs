@@ -51,7 +51,7 @@ namespace OpenCredentialPublisher.PublishingService.Functions
                 });
 
             builder.Services.AddMediatR(typeof(Startup));
-
+            builder.Services.AddHttpClient("default");
             builder.Services.AddScoped<IQueueService, AzureQueueService>();
             builder.Services.AddScoped<IFileStoreService, AzureBlobStoreService>();
             builder.Services.AddScoped<IKeyStore, AzureKeyVaultDatabaseRegistryService>();

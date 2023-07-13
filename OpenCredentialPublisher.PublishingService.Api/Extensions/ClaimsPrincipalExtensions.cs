@@ -13,6 +13,11 @@ namespace OpenCredentialPublisher.PublishingService.Api
         {
             return user.FindFirst(u => u.Type.EndsWith(ClaimConstants.AccessKeyBaseUri))?.Value;
         }
+
+        public static string PushUri(this ClaimsPrincipal user)
+        {
+            return user.FindFirst(u => u.Type.EndsWith(ClaimConstants.PushUri))?.Value;
+        }
     }
  
 }

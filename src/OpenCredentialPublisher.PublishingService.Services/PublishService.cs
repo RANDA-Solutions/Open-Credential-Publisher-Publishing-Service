@@ -9,9 +9,11 @@ using OpenCredentialPublisher.Credentials.Drawing;
 using OpenCredentialPublisher.Credentials.VerifiableCredentials;
 using OpenCredentialPublisher.PublishingService.Data;
 using OpenCredentialPublisher.PublishingService.Shared;
+using QRCoder;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using static QRCoder.PayloadGenerator;
 
 namespace OpenCredentialPublisher.PublishingService.Services
 {
@@ -37,7 +39,7 @@ namespace OpenCredentialPublisher.PublishingService.Services
             _keyStore = keyStore;
         }
 
-        public async Task<string> ProcessRequestAsync(string id, ClrDType clr, string clientId)
+        public async Task<string> ProcessRequestAsync(string id, ClrDType clr, string clientId, bool pushAfterPublish = false, string pushUri = null)
         {
             var requestId = Guid.NewGuid().ToString("d");
 
@@ -47,9 +49,7 @@ namespace OpenCredentialPublisher.PublishingService.Services
 
             var filepath = await _store.StoreAsync(filename, contents);
 
-            var request = new PublishRequest(requestId, clientId, id, filepath);
-
-                  
+            var request = new PublishRequest(requestId, clientId, id, filepath, pushAfterPublish, _appBaseUri, $"{pushUri}");
 
             _context.PublishRequests.Add(request);
 
@@ -60,7 +60,7 @@ namespace OpenCredentialPublisher.PublishingService.Services
             request.RevocationListId = await GetRevocationListId(request);
             await _context.SaveChangesAsync();
 
-            await _mediator.Publish(new PublishProcessRequestCommand(requestId));
+            await _mediator.Publish(new PublishProcessRequestCommand(requestId, pushAfterPublish, pushUri));
 
             _context.ClrPublishLogs.Add(new ClrPublishLog(request.ClientId, requestId, request.PublishState, "Request issued to workflow"));
 
@@ -85,35 +85,44 @@ namespace OpenCredentialPublisher.PublishingService.Services
 
             await _context.SaveChangesAsync();
 
-            string accessKey = request.LatestAccessKey()?.Key;
-
-            if (accessKey != null && request.PublishState == PublishStates.Complete)
+            if (request.PushAfterPublish)
             {
-                var url = PublishRequestExtensions.AccessKeyUrl($"{accessKeyBaseUrl ?? _accessKeyUrl}?{_accessKeyQueryString}", accessKey, _appBaseUri, scope, endpoint, method);
-
-                var qrCode = new ClrPublishQrCode 
+                if (request.ProcessingState == PublishProcessingStates.Complete)
                 {
-                    MimeType = "image/png",
-                    Data = Convert.ToBase64String(QRCodeUtility.Create(url))
-                };
-
-                return new PublishStatusResult
-                {
-                    Status = request.PublishState,
-                    Url = url,
-                    AccessKey = accessKey,
-                    QrCode = qrCode
-                };
-
+                    return new PublishStatusResult
+                    {
+                        Status = request.PublishState,
+                        Pushed = true
+                    };
+                }
             }
-            else
+            else {
+                string accessKey = request.LatestAccessKey()?.Key;
+
+                if (accessKey != null && request.PublishState == PublishStates.Complete)
+                {
+                    var url = PublishRequestExtensions.AccessKeyUrl($"{accessKeyBaseUrl ?? _accessKeyUrl}?{_accessKeyQueryString}", accessKey, _appBaseUri, scope, endpoint, method);
+
+                    var qrCode = new ClrPublishQrCode
+                    {
+                        MimeType = "image/png",
+                        Data = Convert.ToBase64String(QRCodeUtility.Create(url))
+                    };
+
+                    return new PublishStatusResult
+                    {
+                        Status = request.PublishState,
+                        Url = url,
+                        AccessKey = accessKey,
+                        QrCode = qrCode
+                    };
+
+                } 
+            }
+            return new PublishStatusResult
             {
-                return new PublishStatusResult
-                {
-                    Status = request.PublishState
-                };
-
-            }
+                Status = request.PublishState
+            };
         }
 
         private string ClrFilename(string requestId)
