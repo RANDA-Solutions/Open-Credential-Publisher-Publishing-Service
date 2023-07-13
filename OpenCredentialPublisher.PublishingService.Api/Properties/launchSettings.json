@@ -4,7 +4,7 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Localhost"
+        "ASPNETCORE_ENVIRONMENT": "QA"
       },
       "applicationUrl": "https://localhost:5001"
     },

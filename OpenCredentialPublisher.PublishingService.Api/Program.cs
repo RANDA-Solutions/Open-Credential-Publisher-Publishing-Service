@@ -52,11 +52,7 @@ namespace OpenCredentialPublisher.PublishingService.Api
             .ConfigureAppConfiguration((hostContext, builder) =>
             {
                 // Add other providers for JSON, etc.
-
-                if (hostContext.HostingEnvironment.IsDevelopmentOrLocalhost())
-                {
-                    builder.AddUserSecrets<Program>();
-                }
+                builder.AddUserSecrets<Program>(true);
             }).ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();

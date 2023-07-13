@@ -177,8 +177,17 @@ namespace OpenCredentialPublisher.PublishingService.Functions
             await _fileService.StoreAsync(vcFilename, JsonConvert.SerializeObject(verifiableCredential));
 
             publishRequest.Files.Add(File.CreateVCWrapped(vcFilename));
-            publishRequest.ProcessingState = PublishProcessingStates.PublishNotifyReady;
-            publishRequest.PublishState = PublishStates.Complete;
+            if (publishRequest.PushAfterPublish)
+            {
+                publishRequest.ProcessingState = PublishProcessingStates.PublishPushReady;
+                publishRequest.PublishState = PublishStates.Pushing;
+            } 
+            else
+            {
+                publishRequest.ProcessingState = PublishProcessingStates.PublishNotifyReady;
+                publishRequest.PublishState = PublishStates.Complete;
+            }
+            
             publishRequest.PackageSignedTimestamp = DateTimeOffset.UtcNow;
             Log.LogInformation($"VC-Wrapped File Added: {vcFilename}");
             Log.LogInformation($"Next PublishState: '{publishRequest.PublishState}, Next ProcessingState: '{publishRequest.ProcessingState}'");
@@ -193,6 +202,9 @@ namespace OpenCredentialPublisher.PublishingService.Functions
 
                 case PublishProcessingStates.PublishNotifyReady:
                     await _mediator.Publish(new PublishNotifyCommand(publishRequest.RequestId));
+                    break;
+                case PublishProcessingStates.PublishPushReady:
+                    await _mediator.Publish(new PublishPushCommand(publishRequest.RequestId));
                     break;
 
                 default:

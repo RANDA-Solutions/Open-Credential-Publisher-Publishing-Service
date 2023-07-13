@@ -58,9 +58,34 @@ namespace OpenCredentialPublisher.PublishingService.Api.Controllers
                 });
             }
 
+            if (client.Claims.Any(cl => cl.Type == nameof(model.PushUri)))
+            {
+                var claim = client.Claims.FirstOrDefault(cl => cl.Type == nameof(model.PushUri));
+                if (string.IsNullOrEmpty(model.PushUri))
+                {
+                    _dbContext.Remove(claim);
+                }
+                else
+                {
+                    claim.Value = model.PushUri;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(model.PushUri))
+                {
+                    return Ok();
+                }
+                client.Claims.Add(new ClientClaim
+                {
+                    Type = nameof(model.PushUri),
+                    Value = model.PushUri
+                });
+            }
+
             await _dbContext.SaveChangesAsync();
 
-            return Ok(new ConfigurationResult { AccessKeyBaseUri = model.AccessKeyBaseUri });
+            return Ok(new ConfigurationResult { AccessKeyBaseUri = model.AccessKeyBaseUri, PushUri = model.PushUri });
         }
 
     }

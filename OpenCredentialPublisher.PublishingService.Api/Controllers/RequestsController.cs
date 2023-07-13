@@ -40,7 +40,7 @@ namespace OpenCredentialPublisher.PublishingService.Api.Controllers
                 return claim?.Value;
             };
 
-            var accessKeyBaseUri = User.AccessKeyBaseUri() ?? await getAccesskeyClaim(clientId); 
+            var accessKeyBaseUri = await getAccesskeyClaim(clientId); 
             PublishStatusResult response = await _publishService.GetAsync(requestId, clientId, accessKeyBaseUri, ScopeConstants.Wallet, DiscoveryDocumentCustomEndpointsConstants.CredentialsEndpoint, HttpMethods.Post);
 
             if (response == null)

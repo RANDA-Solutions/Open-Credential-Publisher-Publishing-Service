@@ -14,6 +14,7 @@ namespace OpenCredentialPublisher.PublishingService.Api
     public static class ClaimConstants
     {
         public const string AccessKeyBaseUri = "AccessKeyBaseUri";
+        public const string PushUri = "PushUri";
     }
     
 }
