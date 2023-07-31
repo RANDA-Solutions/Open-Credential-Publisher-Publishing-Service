@@ -3,10 +3,11 @@
     "SelfHost": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "https://localhost:6001/swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "QA"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:5001"
+      "applicationUrl": "https://localhost:6001"
     },
     "Docker": {
       "commandName": "Docker",

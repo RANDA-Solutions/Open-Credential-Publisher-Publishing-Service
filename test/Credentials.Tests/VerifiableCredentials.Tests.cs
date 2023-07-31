@@ -6,10 +6,10 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using OpenCredentialPublisher.Credentials.Clrs.Interfaces;
-using OpenCredentialPublisher.Credentials.Clrs.KeyStorage;
-using OpenCredentialPublisher.Credentials.Clrs.Utilities;
-using OpenCredentialPublisher.Credentials.Clrs.Clr;
+using OpenCredentialPublisher.Credentials.Clrs.v1_0.Interfaces;
+using OpenCredentialPublisher.Credentials.Clrs.v1_0.KeyStorage;
+using OpenCredentialPublisher.Credentials.Clrs.v1_0.Utilities;
+using OpenCredentialPublisher.Credentials.Clrs.v1_0.Clr;
 using System.Collections.Generic;
 
 namespace OpenCredentialPublisher.Credentials.Tests

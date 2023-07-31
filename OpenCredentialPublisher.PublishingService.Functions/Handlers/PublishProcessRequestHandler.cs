@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using OpenCredentialPublisher.Credentials.Clrs.Clr;
+using OpenCredentialPublisher.Credentials.Clrs.v1_0.Clr;
 using OpenCredentialPublisher.PublishingService.Data;
 using OpenCredentialPublisher.PublishingService.Services;
 using OpenCredentialPublisher.PublishingService.Shared;
@@ -100,7 +100,7 @@ namespace OpenCredentialPublisher.PublishingService.Functions
             //var artifacts = clr.Assertions?
             //    .Where(a => a.Evidence != null)
             //    .SelectMany(a => a.Evidence)?
-            //        .Where(e => e.Artifacts != null)
+            //        .Where(e => e.Artifacts != null)  
             //        .SelectMany(e => e.Artifacts)
             //            .ToList();
 

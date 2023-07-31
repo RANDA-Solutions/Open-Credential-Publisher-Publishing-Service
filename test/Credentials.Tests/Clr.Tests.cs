@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
 using NUnit.Framework;
-using OpenCredentialPublisher.Credentials.Clrs.Clr;
-using OpenCredentialPublisher.Credentials.Clrs.Interfaces;
-using OpenCredentialPublisher.Credentials.Clrs.KeyStorage;
-using OpenCredentialPublisher.Credentials.Clrs.Utilities;
+using OpenCredentialPublisher.Credentials.Clrs.v1_0.Clr;
+using OpenCredentialPublisher.Credentials.Clrs.v1_0.Interfaces;
+using OpenCredentialPublisher.Credentials.Clrs.v1_0.KeyStorage;
+using OpenCredentialPublisher.Credentials.Clrs.v1_0.Utilities;
 using OpenCredentialPublisher.Credentials.Drawing;
 using System;
 using System.Collections.Generic;

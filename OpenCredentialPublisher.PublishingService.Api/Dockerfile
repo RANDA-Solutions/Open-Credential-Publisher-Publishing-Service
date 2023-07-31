@@ -8,13 +8,13 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["OpenCredentialPublisher.PublishingService.Api/OpenCredentialPublisher.PublishingService.Api.csproj", "OpenCredentialPublisher.PublishingService.Api/"]
-COPY ["src/OpenCredentialPublisher.PublishingService.Data/OpenCredentialPublisher.PublishingService.Data.csproj", "src/OpenCredentialPublisher.PublishingService.Data/"]
-COPY ["src/OpenCredentialPublisher.PublishingService.Shared/OpenCredentialPublisher.PublishingService.Shared.csproj", "src/OpenCredentialPublisher.PublishingService.Shared/"]
-COPY ["src/OpenCredentialPublisher.PublishingService.Services/OpenCredentialPublisher.PublishingService.Services.csproj", "src/OpenCredentialPublisher.PublishingService.Services/"]
-COPY ["src/OpenCredentialPublisher.Credentials.VerifiableCredentials/OpenCredentialPublisher.Credentials.VerifiableCredentials.csproj", "src/OpenCredentialPublisher.Credentials.VerifiableCredentials/"]
-COPY ["src/OpenCredentialPublisher.Credentials.Cryptography/OpenCredentialPublisher.Credentials.Cryptography.csproj", "src/OpenCredentialPublisher.Credentials.Cryptography/"]
-COPY ["src/OpenCredentialPublisher.Credentials.Clrs/OpenCredentialPublisher.Credentials.Clrs.csproj", "src/OpenCredentialPublisher.Credentials.Clrs/"]
-COPY ["src/OpenCredentialPublisher.Credentials.Drawing/OpenCredentialPublisher.Credentials.Drawing.csproj", "src/OpenCredentialPublisher.Credentials.Drawing/"]
+COPY ["OpenCredentialPublisher.PublishingService.Data/OpenCredentialPublisher.PublishingService.Data.csproj", "src/OpenCredentialPublisher.PublishingService.Data/"]
+COPY ["OpenCredentialPublisher.PublishingService.Shared/OpenCredentialPublisher.PublishingService.Shared.csproj", "src/OpenCredentialPublisher.PublishingService.Shared/"]
+COPY ["OpenCredentialPublisher.PublishingService.Services/OpenCredentialPublisher.PublishingService.Services.csproj", "src/OpenCredentialPublisher.PublishingService.Services/"]
+COPY ["OpenCredentialPublisher.Credentials.VerifiableCredentials/OpenCredentialPublisher.Credentials.VerifiableCredentials.csproj", "src/OpenCredentialPublisher.Credentials.VerifiableCredentials/"]
+COPY ["OpenCredentialPublisher.Credentials.Cryptography/OpenCredentialPublisher.Credentials.Cryptography.csproj", "src/OpenCredentialPublisher.Credentials.Cryptography/"]
+COPY ["OpenCredentialPublisher.Credentials.Clrs.v1_0/OpenCredentialPublisher.Credentials.Clrs.v1_0.csproj", "src/OpenCredentialPublisher.Credentials.Clrs.v1_0/"]
+COPY ["OpenCredentialPublisher.Credentials.Drawing/OpenCredentialPublisher.Credentials.Drawing.csproj", "src/OpenCredentialPublisher.Credentials.Drawing/"]
 RUN dotnet restore "OpenCredentialPublisher.PublishingService.Api/OpenCredentialPublisher.PublishingService.Api.csproj"
 COPY . .
 WORKDIR "/src/OpenCredentialPublisher.PublishingService.Api"

@@ -40,7 +40,7 @@ namespace OpenCredentialPublisher.PublishingService.Api.Controllers
             {
                 string clientId = User.ClientId();
 
-                var requestId = await _publishService.ProcessRequestAsync(request.Identity.Id, request.Clr, clientId);
+                var requestId = await _publishService.ProcessRequestAsync(request.Identity.Id, request.Clr, clientId, request.Version ?? Pathways.Publish1_0);
 
                 return Ok(new ClrPublishResult() { RequestId = requestId });
             }
@@ -86,5 +86,4 @@ namespace OpenCredentialPublisher.PublishingService.Api.Controllers
 
 
     }
-
 }

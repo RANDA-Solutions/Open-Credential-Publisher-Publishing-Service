@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using OpenCredentialPublisher.Credentials.Clrs.Clr;
+using OpenCredentialPublisher.Credentials.Clrs.v1_0.Clr;
 
 namespace OpenCredentialPublisher.PublishingService.Api
 {
@@ -10,6 +10,9 @@ namespace OpenCredentialPublisher.PublishingService.Api
 
         [JsonProperty("clr", Required = Required.Always)]
         public ClrDType Clr { get; set; }
+
+        [JsonProperty("version")]
+        public string Version { get; set; }
     }
 
 }

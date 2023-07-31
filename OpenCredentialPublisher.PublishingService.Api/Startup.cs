@@ -21,7 +21,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
-using OpenCredentialPublisher.Credentials.Clrs.Interfaces;
+using OpenCredentialPublisher.Credentials.Clrs.v1_0.Interfaces;
 using OpenCredentialPublisher.PublishingService.Data;
 using OpenCredentialPublisher.PublishingService.Services;
 using OpenCredentialPublisher.PublishingService.Services.Abstractions;
@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 
 namespace OpenCredentialPublisher.PublishingService.Api
@@ -46,6 +47,7 @@ namespace OpenCredentialPublisher.PublishingService.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             IdentityModelEventSource.ShowPII = true;
 
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
@@ -125,10 +127,19 @@ namespace OpenCredentialPublisher.PublishingService.Api
             else
             {
                 var keyVaultOptions = keyVaultSection.Get<AzureKeyVaultOptions>();
-                var credential = new ClientSecretCredential(keyVaultOptions.AzureTenantId, keyVaultOptions.AzureAppClientId, keyVaultOptions.AzureAppClientSecret);
-                var certificateClient = new CertificateClient(new Uri(keyVaultOptions.KeyVaultBaseUri), credential);
-                var certificateResponse = certificateClient.DownloadCertificate(keyVaultOptions.CertificateName);
-                ids.AddSigningCredential(certificateResponse.Value);
+                if (keyVaultOptions.UseRoleBasedAccess)
+                {
+                    var certificateClient = new CertificateClient(new Uri(keyVaultOptions.KeyVaultBaseUri), new DefaultAzureCredential());
+                    var azureResponse = certificateClient.DownloadCertificate(keyVaultOptions.CertificateName);
+                    ids.AddSigningCredential(azureResponse.Value);
+                }
+                else
+                {
+                    var credential = new ClientSecretCredential(keyVaultOptions.AzureTenantId, keyVaultOptions.AzureAppClientId, keyVaultOptions.AzureAppClientSecret);
+                    var certificateClient = new CertificateClient(new Uri(keyVaultOptions.KeyVaultBaseUri), credential);
+                    var certificateResponse = certificateClient.DownloadCertificate(keyVaultOptions.CertificateName);
+                    ids.AddSigningCredential(certificateResponse.Value);
+                }
             }
                
 
@@ -176,6 +187,7 @@ namespace OpenCredentialPublisher.PublishingService.Api
             services.AddTransient<IRevocationListService, RevocationListService>();
             services.AddTransient<IDynamicClientRegistrationService, DynamicClientRegistrationService>();
             services.AddTransient<IKeyStore, AzureKeyVaultDatabaseRegistryService>();
+            services.AddTransient<ProofService>();
 
             services.AddSingleton<ICorsPolicyService>((container) => {
                 var logger = container.GetRequiredService<ILogger<DefaultCorsPolicyService>>();
@@ -266,7 +278,7 @@ namespace OpenCredentialPublisher.PublishingService.Api
         public void Configure(IApplicationBuilder app)
         {
             // TODO: Remove this line once database is stable
-            InitializeDatabase(app);
+            //InitializeDatabase(app);
 
             app.Use(async (ctx, next) =>
             {

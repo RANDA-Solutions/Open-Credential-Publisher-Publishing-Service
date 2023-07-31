@@ -8,12 +8,12 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["OpenCredentialPublisher.PublishingService.Functions/OpenCredentialPublisher.PublishingService.Functions.csproj", "OpenCredentialPublisher.PublishingService.Functions/"]
-COPY ["src/OpenCredentialPublisher.PublishingService.Services/OpenCredentialPublisher.PublishingService.Services.csproj", "src/OpenCredentialPublisher.PublishingService.Services/"]
-COPY ["src/Clrs/OpenCredentialPublisher.Credentials.Clrs.csproj", "src/Clrs/"]
-COPY ["src/Cryptography/OpenCredentialPublisher.Credentials.Cryptography.csproj", "src/Cryptography/"]
-COPY ["src/OpenCredentialPublisher.PublishingService.Data/OpenCredentialPublisher.PublishingService.Data.csproj", "src/OpenCredentialPublisher.PublishingService.Data/"]
-COPY ["src/OpenCredentialPublisher.Credentials.Drawing/OpenCredentialPublisher.Credentials.Drawing.csproj", "src/OpenCredentialPublisher.Credentials.Drawing/"]
-COPY ["src/VerifiableCredentials/OpenCredentialPublisher.Credentials.VerifiableCredentials.csproj", "src/VerifiableCredentials/"]
+COPY ["OpenCredentialPublisher.PublishingService.Services/OpenCredentialPublisher.PublishingService.Services.csproj", "src/OpenCredentialPublisher.PublishingService.Services/"]
+COPY ["Clrs/OpenCredentialPublisher.Credentials.Clrs.v1_0.csproj", "src/Clrs/"]
+COPY ["Cryptography/OpenCredentialPublisher.Credentials.Cryptography.csproj", "src/Cryptography/"]
+COPY ["OpenCredentialPublisher.PublishingService.Data/OpenCredentialPublisher.PublishingService.Data.csproj", "src/OpenCredentialPublisher.PublishingService.Data/"]
+COPY ["OpenCredentialPublisher.Credentials.Drawing/OpenCredentialPublisher.Credentials.Drawing.csproj", "src/OpenCredentialPublisher.Credentials.Drawing/"]
+COPY ["VerifiableCredentials/OpenCredentialPublisher.Credentials.VerifiableCredentials.csproj", "src/VerifiableCredentials/"]
 RUN dotnet restore "OpenCredentialPublisher.PublishingService.Functions/OpenCredentialPublisher.PublishingService.Functions.csproj"
 COPY . .
 WORKDIR "/src/OpenCredentialPublisher.PublishingService.Functions"

@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using OpenCredentialPublisher.Credentials.Clrs.Utilities;
+using OpenCredentialPublisher.Credentials.Clrs.v1_0.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -134,6 +134,10 @@ namespace OpenCredentialPublisher.PublishingService.Api.Data.Migrations.Applicat
                     b.Property<DateTimeOffset?>("PackageSignedTimestamp")
                         .HasColumnType("datetimeoffset(7)");
 
+                    b.Property<string>("Pathway")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(128)");
+
                     b.Property<string>("ProcessingState")
                         .HasColumnType("nvarchar(64)");
 
@@ -209,8 +213,22 @@ namespace OpenCredentialPublisher.PublishingService.Api.Data.Migrations.Applicat
                         .IsRequired()
                         .HasColumnType("nvarchar(128)");
 
+                    b.Property<string>("KeyType")
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<string>("PrivateKey")
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<string>("PublicKey")
+                        .HasColumnType("nvarchar(256)");
+
                     b.Property<string>("RequestId")
                         .HasColumnType("nvarchar(128)");
+
+                    b.Property<bool>("StoredInKeyVault")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("VaultKeyIdentifier")
                         .HasColumnType("nvarchar(256)");
