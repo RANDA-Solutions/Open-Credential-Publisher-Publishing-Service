@@ -20,7 +20,7 @@ namespace OpenCredentialPublisher.PublishingService.Data
             this.SigningKeys = new List<SigningKey>();
         }
 
-        public PublishRequest(string requestId, string clientId, string requestIdentity, string filepath, string pathway, bool pushAfterPublish = false, string appUri = String.Empty, string pushUri = String.Empty) : this()
+        public PublishRequest(string requestId, string clientId, string requestIdentity, string filepath, string pathway, bool pushAfterPublish = false, string appUri = null, string pushUri = null) : this()
         {
             this.ClientId = clientId;
             this.RequestId = requestId;

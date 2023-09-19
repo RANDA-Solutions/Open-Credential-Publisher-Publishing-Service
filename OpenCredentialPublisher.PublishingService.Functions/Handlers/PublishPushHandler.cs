@@ -6,16 +6,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using OpenCredentialPublisher.Credentials.Clrs.Clr;
 using OpenCredentialPublisher.PublishingService.Data;
 using OpenCredentialPublisher.PublishingService.Services;
 using OpenCredentialPublisher.PublishingService.Shared;
 using System;
-using System.Json;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Web;
 using static QRCoder.PayloadGenerator;
@@ -102,12 +101,14 @@ namespace OpenCredentialPublisher.PublishingService.Functions
             string accessKey = publishRequest.LatestAccessKey()?.Key;
             if (accessKey != null)
             {
-                var bodyJson = new JsonObject();
-                bodyJson.Add("endpoint", DiscoveryDocumentCustomEndpointsConstants.CredentialsEndpoint);
-                bodyJson.Add("scope", ScopeConstants.Wallet);
-                bodyJson.Add("payload", JsonConvert.SerializeObject(new AccessKeyPayload { AccessKey = accessKey }));
-                bodyJson.Add("issuer", publishRequest.AppUri);
-                bodyJson.Add("method", HttpMethod.Post.ToString());
+                var bodyJson = new JsonObject
+                {
+                    { "endpoint", DiscoveryDocumentCustomEndpointsConstants.CredentialsEndpoint },
+                    { "scope", ScopeConstants.Wallet },
+                    { "payload", JsonConvert.SerializeObject(new AccessKeyPayload { AccessKey = accessKey }) },
+                    { "issuer", publishRequest.AppUri },
+                    { "method", HttpMethod.Post.ToString() }
+                };
                 var body = bodyJson.ToString();
                 var request = new HttpRequestMessage(HttpMethod.Post, publishRequest.PushUri);
 

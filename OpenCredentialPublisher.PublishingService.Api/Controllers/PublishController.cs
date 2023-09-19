@@ -73,7 +73,7 @@ namespace OpenCredentialPublisher.PublishingService.Api.Controllers
 
                 var pushUri = await getPushUriClaim(clientId);
 
-                var requestId = await _publishService.ProcessRequestAsync(request.Identity.Id, request.Clr, clientId, true, pushUri);
+                var requestId = await _publishService.ProcessRequestAsync(request.Identity.Id, request.Clr, clientId, request.Version ?? Pathways.Publish1_0, true, pushUri);
 
                 return Ok(new ClrPublishResult() { RequestId = requestId });
             }
